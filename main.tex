@@ -252,6 +252,11 @@ Of the 63 proposals that received at least one vote, the mean turnout was 11.5\%
 
 This pattern suggests two interpretations. Optimistically, the community achieves strong consensus before bringing proposals to a vote, and the AQB mechanism correctly interprets non-participation as implicit consent. Alternatively, the lack of contested proposals may reflect a community too small or too homogeneous for meaningful disagreement to emerge. We consider this a limitation: the AQB mechanism has not yet been stress-tested under adversarial or genuinely contested conditions.
 
+\paragraph{Knowhow Asymmetry.}
+Analysis of proposal submitters reveals significant concentration: of 67 proposals, only 21 distinct accounts submitted proposals, with the top two accounts responsible for 45\% of all submissions. In contrast, 120 unique accounts cast votes---a substantially broader base, but still a minority of ceremony participants. In practice, we observe that proposals are primarily submitted by community leaders who also educate the community about the governance system. This knowhow asymmetry creates an informal influence dynamic: community members with less technical understanding of the protocol tend to follow the opinion of those who explain it. In some cases, participants hand over their phones so that a single person can submit votes on their behalf---a form of voluntary delegation that is invisible on-chain but undermines the one-person-one-vote principle in practice.
+
+This represents a fundamental tension in our design: the governance protocol assumes an informed electorate capable of independently evaluating proposals, but the complexity of on-chain governance may exceed what can reasonably be expected of participants in low-resource settings. The gap between the protocol's democratic ideals and the social reality of facilitated participation is a limitation that cannot be resolved through mechanism design alone---it requires investment in governance literacy and accessible interfaces.
+
 \subsection{Treasury Swap Governance Outcomes}
 \label{sec:swap-results}
 
