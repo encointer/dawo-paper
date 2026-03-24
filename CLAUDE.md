@@ -29,6 +29,8 @@ https://docs.google.com/presentation/d/1rnGeauiPni6MlRsNu5dN2gRCLMAkGxFmcVHA1xeQ
 * Ruddick https://raw.githubusercontent.com/grassrootseconomics/org-website/master/public/pdfs/Grassroots%20Economics%20-%20Reflection%20and%20Practice%20(PDF%20Single%20Spread).pdf
 * Schneider: https://webfiles.ucpress.edu/oa/9780520393950_WEB.pdf
 
+Digested summaries of all references are in `reference-notes.md`.
+
 # data analysis
 
 Frontend
