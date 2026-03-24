@@ -10,6 +10,10 @@ Comply with AI rules stated by the conference.
 All figures need to be scripted and reproducible from data source to figure. 
 Use the LaTeX template provided by the conference.
 
+For the double-blind review, use latex commands for placeholders for project names and other deanonymizing terms. 
+If necessary, put placeholders for citations as well which could obviously reveal authors
+
+
 # resources to use 
 
 https://encointer.org/
