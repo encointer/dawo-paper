@@ -1,0 +1,161 @@
+%%%%%%%%%%%%%%%%%%%% main.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Democratic Treasury Governance Without Plutocracy
+% DAWO26 Full Paper Submission (double-blind)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass{svproc}
+
+% Packages
+\usepackage{url}
+\def\UrlFont{\rmfamily}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\begin{document}
+\mainmatter
+
+\title{Democratic Treasury Governance Without Plutocracy:\\
+Proof-of-Personhood Voting for DAO Resource Allocation}
+
+\titlerunning{Democratic Treasury Governance Without Plutocracy}
+
+% Double-blind: author info omitted for review
+\author{}
+\institute{}
+
+\maketitle
+
+\begin{abstract}
+Decentralized Autonomous Organizations (DAOs) typically govern treasury resources through token-weighted voting, producing plutocratic outcomes in which influence scales with capital. We present a field-deployed governance architecture that enables one-person-one-vote treasury allocation without reliance on centralized identity systems. Our approach combines decentralized proof-of-personhood (PoP) with on-chain democratic governance, where personhood is established through simultaneous, recurring physical key-signing ceremonies. Building on this identity foundation, we implement a governance protocol featuring open proposal submission, parallel competing proposals, participation-weighted voting power, and adaptive quorum biasing. We apply this democratic infrastructure to treasury swap governance in community currencies, enabling communities to democratically manage stablecoin-backed swap options for local businesses. The architecture is operational in two African communities. We present empirical findings from these deployments, analyzing participation patterns, voter turnout dynamics, and the effectiveness of adaptive quorum biasing in practice.
+%
+\keywords{DAO governance, proof-of-personhood, one-person-one-vote, democratic treasury management, community currencies}
+\end{abstract}
+
+%=====================================================================
+\section{Introduction}
+\label{sec:intro}
+%=====================================================================
+
+% TODO: Motivate the problem of plutocratic DAO governance
+% TODO: Introduce proof-of-personhood as enabling democratic mechanisms
+% TODO: Outline contributions and paper structure
+
+%=====================================================================
+\section{Related Work}
+\label{sec:related}
+%=====================================================================
+
+% TODO: DAO governance and token-weighted voting
+% TODO: Proof-of-personhood approaches (Ford, Ohlhaver, Buterin)
+% TODO: Community currencies (Ruddick, Grassroots Economics)
+% TODO: Democratic design for online spaces (Schneider)
+
+%=====================================================================
+\section{Proof-of-Personhood via Physical Ceremonies}
+\label{sec:pop}
+%=====================================================================
+
+% TODO: Encointer ceremony mechanism
+% TODO: Sybil resistance without centralized identity
+% TODO: Reputation accumulation model
+% TODO: Real-world participation conditions
+
+%=====================================================================
+\section{Democratic Governance Protocol}
+\label{sec:governance}
+%=====================================================================
+
+\subsection{Open Proposal Submission}
+\label{sec:proposals}
+
+% TODO: Permissionless proposal creation to prevent gatekeeping
+
+\subsection{Parallel Competing Proposals}
+\label{sec:parallel}
+
+% TODO: First-to-pass supersedes conflicting alternatives
+
+\subsection{Participation-Weighted Voting Power}
+\label{sec:voting-power}
+
+% TODO: Capped at 4x, increases with ceremony attendance, decreases with inactivity
+% TODO: One-cycle reputation delay to prevent last-minute takeovers
+
+\subsection{Adaptive Quorum Biasing}
+\label{sec:quorum}
+
+% TODO: Formal specification
+% TODO: Full turnout -> 50% majority; minimal turnout -> near-unanimity
+% TODO: Balancing agility and legitimacy under fluctuating turnout
+
+%=====================================================================
+\section{Treasury Swap Governance for Community Currencies}
+\label{sec:treasury}
+%=====================================================================
+
+% TODO: The sustainability challenge: popular businesses accumulate excess tokens
+% TODO: Stablecoin-backed treasury swap options
+% TODO: Democratic evaluation of swap applications
+% TODO: Per-beneficiary limits (10%) and exercise fees (2%)
+% TODO: Bank run prevention
+
+%=====================================================================
+\section{Field Deployment and Empirical Results}
+\label{sec:results}
+%=====================================================================
+
+\subsection{Deployment Context}
+\label{sec:deployments}
+
+% TODO: Tanzania community (tailors, food vendors, cosmetics sellers)
+% TODO: Nigeria community (eight acceptance points)
+
+\subsection{Participation Patterns}
+\label{sec:participation}
+
+% TODO: Data analysis from ceremony participation
+% TODO: Voter turnout dynamics
+
+\subsection{Adaptive Quorum Biasing in Practice}
+\label{sec:quorum-results}
+
+% TODO: Empirical effectiveness analysis
+
+\subsection{Treasury Swap Governance Outcomes}
+\label{sec:swap-results}
+
+% TODO: Early experiences with swap proposals
+
+%=====================================================================
+\section{Discussion}
+\label{sec:discussion}
+%=====================================================================
+
+% TODO: How can DAOs govern shared resources without plutocracy?
+% TODO: Balancing responsiveness with legitimacy under variable participation
+% TODO: Limitations and threats to validity
+% TODO: Generalizability beyond community currencies
+
+%=====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+%=====================================================================
+
+% TODO: Summary of contributions
+% TODO: Future work
+
+%=====================================================================
+\section*{Acknowledgments}
+%=====================================================================
+
+This work was supported by the Encointer Association.
+Portions of this manuscript were drafted with the assistance of large language models (Claude, Anthropic), in accordance with the DAWO26 AI usage policy and Springer Declarations for Use of AI. The authors take full responsibility for the content.
+
+\bibliographystyle{splncs03}
+\bibliography{references}
+
+\end{document}
