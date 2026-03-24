@@ -48,16 +48,17 @@
       "peak_participants": 47
     }
   ],
-  "ceremony_Green Bay_total_ceremonies": 38,
-  "ceremony_Green Bay_mean_participants": 3.5,
-  "ceremony_PayNuQ_total_ceremonies": 35,
-  "ceremony_PayNuQ_mean_participants": 21.1,
-  "ceremony_Nyota_total_ceremonies": 87,
-  "ceremony_Nyota_mean_participants": 32.7,
-  "ceremony_Leu_total_ceremonies": 113,
-  "ceremony_Leu_mean_participants": 18.4,
+  "ceremony_Community D_total_ceremonies": 38,
+  "ceremony_Community D_mean_participants": 3.5,
+  "ceremony_Community B_total_ceremonies": 35,
+  "ceremony_Community B_mean_participants": 21.1,
+  "ceremony_Community A_total_ceremonies": 87,
+  "ceremony_Community A_mean_participants": 32.7,
+  "ceremony_Community C_total_ceremonies": 113,
+  "ceremony_Community C_mean_participants": 18.4,
   "governance_start": "2024-12-02",
   "governance_end": "2026-03-16",
   "swap_options_granted": 22,
-  "swap_options_exercised": 36
+  "swap_options_exercised": 14,
+  "treasury_native_spends": 22
 }

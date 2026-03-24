@@ -11,17 +11,35 @@ def main():
     # Granted swap options
     granted = list(pindex.events.find({
         'section': 'encointerTreasuries',
-        'method': {'$in': ['GrantedSwapAssetOption', 'GrantedSwapNativeOption']}
+        'method': 'GrantedSwapAssetOption'
     }).sort('timestamp', 1))
 
-    # Spent events (exercises)
-    spent = list(pindex.events.find({
+    # Swap exercises are extrinsics (swapAsset / swapNative), not events
+    exercises = list(pindex.extrinsics.find({
         'section': 'encointerTreasuries',
-        'method': {'$in': ['SpentAsset', 'SpentNative']}
+        'method': {'$in': ['swapAsset', 'swapNative']},
+        'success': True
     }).sort('timestamp', 1))
 
-    print(f"Granted swap options: {len(granted)}")
-    print(f"Swap exercises (spent): {len(spent)}")
+    # Approved swap option proposals (submitted but not yet enacted)
+    submitted = list(pindex.events.find({
+        'section': 'encointerDemocracy',
+        'method': 'ProposalSubmitted',
+        'data.proposalAction.IssueSwapAssetOption': {'$exists': True}
+    }))
+    swap_pids = [s['data']['proposalId'] for s in submitted]
+
+    approved = list(pindex.events.find({
+        'section': 'encointerDemocracy',
+        'method': 'ProposalStateUpdated',
+        'data.proposalId': {'$in': swap_pids},
+        'data.proposalState': 'Approved'
+    }).sort('timestamp', 1))
+
+    print(f"Swap option proposals submitted: {len(submitted)}")
+    print(f"Swap option proposals approved: {len(approved)}")
+    print(f"Swap options granted (enacted): {len(granted)}")
+    print(f"Swap options exercised (successful): {len(exercises)}")
 
     # Group by community
     from collections import defaultdict
@@ -35,63 +53,73 @@ def main():
             'method': g['method']
         })
 
-    for s in spent:
-        cid_data = s['data'].get('cid', '')
-        ts = s.get('timestamp', 0)
+    for ex in exercises:
+        # Extrinsics use args.cid, not data.cid
+        cid_data = ex.get('args', {}).get('cid', '')
+        ts = ex.get('timestamp', 0)
         by_cid[cid_data].append({
-            'type': 'spent',
+            'type': 'exercised',
             'timestamp': ts,
-            'method': s['method']
+            'method': ex['method']
         })
 
     for cid, events in by_cid.items():
         name = COMMUNITIES.get(cid, cid)
         n_granted = sum(1 for e in events if e['type'] == 'granted')
-        n_spent = sum(1 for e in events if e['type'] == 'spent')
-        print(f"  {name}: {n_granted} granted, {n_spent} exercises")
+        n_exercised = sum(1 for e in events if e['type'] == 'exercised')
+        print(f"  {name}: {n_granted} granted, {n_exercised} exercised")
 
     # Plot timeline of all swap events
     fig, ax = plt.subplots(figsize=(FIG_WIDTH_DOUBLE, 2.0))
 
+    # Build event list with three types
     all_events = []
+    for a in approved:
+        ts = a.get('timestamp', 0)
+        if ts:
+            all_events.append((ts, 'Approved'))
     for g in granted:
         ts = g.get('timestamp', 0)
         if ts:
-            all_events.append((ts, 'Granted', g['data'].get('cid', '')))
-    for s in spent:
-        ts = s.get('timestamp', 0)
+            all_events.append((ts, 'Granted'))
+    for ex in exercises:
+        ts = ex.get('timestamp', 0)
         if ts:
-            all_events.append((ts, 'Exercised', s['data'].get('cid', '')))
+            all_events.append((ts, 'Exercised'))
 
     all_events.sort()
 
     if all_events:
-        dates = [datetime.fromtimestamp(e[0]/1000, tz=timezone.utc) for e in all_events]
-        types = [e[1] for e in all_events]
-        cids = [COMMUNITIES.get(e[2], e[2][:8]) for e in all_events]
+        a_dates, a_cum = [], []
+        g_dates, g_cum = [], []
+        e_dates, e_cum = [], []
+        a_count = g_count = e_count = 0
 
-        # Cumulative granted and exercised over time
-        cum_granted = []
-        cum_exercised = []
-        g_count = 0
-        e_count = 0
-        g_dates = []
-        e_dates = []
-        for d, t, c in zip(dates, types, cids):
-            if t == 'Granted':
+        for ts, typ in all_events:
+            d = datetime.fromtimestamp(ts / 1000, tz=timezone.utc)
+            if typ == 'Approved':
+                a_count += 1
+                a_dates.append(d)
+                a_cum.append(a_count)
+            elif typ == 'Granted':
                 g_count += 1
                 g_dates.append(d)
-                cum_granted.append(g_count)
+                g_cum.append(g_count)
             else:
                 e_count += 1
                 e_dates.append(d)
-                cum_exercised.append(e_count)
+                e_cum.append(e_count)
 
-        ax.step(g_dates, cum_granted, where='post', linewidth=1.2,
-                color='#1f77b4', label=f'Cumulative granted (n={g_count})')
+        ax.step(a_dates, a_cum, where='post', linewidth=1.2,
+                color='#aaaaaa', linestyle='--',
+                label=f'Approved (n={a_count})')
+        ax.step(g_dates, g_cum, where='post', linewidth=1.2,
+                color='#1f77b4',
+                label=f'Granted / enacted (n={g_count})')
         if e_dates:
-            ax.step(e_dates, cum_exercised, where='post', linewidth=1.2,
-                    color='#2ca02c', label=f'Cumulative exercised (n={e_count})')
+            ax.step(e_dates, e_cum, where='post', linewidth=1.2,
+                    color='#2ca02c',
+                    label=f'Exercised (n={e_count})')
 
     ax.set_xlabel('Date')
     ax.set_ylabel('Swap Options')

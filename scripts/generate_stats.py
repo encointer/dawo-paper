@@ -116,14 +116,20 @@ def main():
     # 6. Treasury events
     granted = pindex.events.count_documents({
         'section': 'encointerTreasuries',
-        'method': {'$in': ['GrantedSwapAssetOption', 'GrantedSwapNativeOption']}
+        'method': 'GrantedSwapAssetOption'
     })
-    spent = pindex.events.count_documents({
+    exercised = pindex.extrinsics.count_documents({
         'section': 'encointerTreasuries',
-        'method': {'$in': ['SpentAsset', 'SpentNative']}
+        'method': {'$in': ['swapAsset', 'swapNative']},
+        'success': True
+    })
+    treasury_spends = pindex.events.count_documents({
+        'section': 'encointerTreasuries',
+        'method': 'SpentNative'
     })
     stats['swap_options_granted'] = granted
-    stats['swap_options_exercised'] = spent
+    stats['swap_options_exercised'] = exercised
+    stats['treasury_native_spends'] = treasury_spends
 
     # Print and save
     print(json.dumps(stats, indent=2))
