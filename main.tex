@@ -45,7 +45,7 @@ Decentralized Autonomous Organizations (DAOs) typically govern treasury resource
 \label{sec:intro}
 %=====================================================================
 
-Decentralized Autonomous Organizations (DAOs) manage billions of dollars in collective treasury assets, yet their governance mechanisms almost universally default to token-weighted voting: one token, one vote. This design produces plutocratic outcomes in which financial capital determines political power~\cite{schneider2024governable}. Large token holders dominate proposal outcomes, while smaller participants---often the most active community members---are systematically marginalized. Schneider identifies this as a structural consequence of the ``personhood problem'': without a reliable way to verify that each participant is a unique human, pseudonymous blockchain systems cannot implement democratic alternatives.
+Decentralized Autonomous Organizations (DAOs) manage billions of dollars in collective treasury assets, yet their governance mechanisms almost universally default to token-weighted voting: one token, one vote. This design produces plutocratic outcomes in which financial capital determines political power~\cite{schneider2024governable}. Empirical analysis of major DAOs confirms extreme concentration: Fritsch et al.~\cite{fritsch2024analyzing} find Gini coefficients of voting power exceeding 0.98 in Compound and Uniswap governance, with fewer than 10 delegates controlling a majority of decisions. Large token holders dominate proposal outcomes, while smaller participants---often the most active community members---are systematically marginalized. Schneider identifies this as a structural consequence of the ``personhood problem'': without a reliable way to verify that each participant is a unique human, pseudonymous blockchain systems cannot implement democratic alternatives.
 
 Proof-of-personhood (PoP) protocols offer a path beyond this impasse. By establishing that each participant in a governance process is a distinct human being, PoP enables one-person-one-vote mechanisms that decouple political influence from financial stake. Several PoP approaches have been proposed---biometric verification~\cite{buterin2023biometric}, social graph analysis, and physical ceremonies~\cite{ford2020identity}---each with distinct tradeoffs in privacy, accessibility, and decentralization.
 
@@ -64,7 +64,7 @@ We begin with related work (Section~\ref{sec:related}), then describe the PoP me
 %=====================================================================
 
 \paragraph{DAO Governance and Plutocracy.}
-The dominant governance paradigm in DAOs is token-weighted voting, where influence scales linearly with token holdings. Schneider~\cite{schneider2024governable} provides a systematic critique, arguing that this produces ``persistent plutocracy'' and ``implicit feudalism''---online spaces that default to autocratic or wealth-based control, eroding participants' capacity for democratic self-governance. Quadratic voting, conviction voting, and vote delegation have been proposed as mitigations, but all remain vulnerable to Sybil attacks when participants can cheaply create multiple identities.
+The dominant governance paradigm in DAOs is token-weighted voting, where influence scales linearly with token holdings. Schneider~\cite{schneider2024governable} provides a systematic critique, arguing that this produces ``persistent plutocracy'' and ``implicit feudalism''---online spaces that default to autocratic or wealth-based control, eroding participants' capacity for democratic self-governance. Fritsch et al.~\cite{fritsch2024analyzing} provide empirical evidence across Compound, Uniswap, and ENS: voting power Gini coefficients exceed 0.98, and over 90\% of voting power in Compound and Uniswap resides with single-holder delegates, making these systems resemble shareholder meetings rather than democratic communities. Quadratic voting, conviction voting, and vote delegation have been proposed as mitigations, but all remain vulnerable to Sybil attacks when participants can cheaply create multiple identities.
 
 \paragraph{Proof-of-Personhood.}
 Ford~\cite{ford2020identity} distinguishes \emph{identity} (divisive attributes) from \emph{personhood} (the inalienable right to participate equally) and evaluates PoP approaches against four criteria: inclusive, equal, secure, and private. Buterin~\cite{buterin2023biometric} taxonomizes PoP into social-graph-based, general-hardware biometric, and specialized-hardware biometric approaches, recommending hybrid strategies that combine multiple paradigms. Ohlhaver et al.~\cite{ohlhaver2024proof} conduct a deep empirical study of Idena, a ceremony-based PoP system, finding that while it achieved \emph{de jure} Sybil resistance (filtering bots), it failed at \emph{de facto} resistance: by May 2022, 23 entities controlled approximately 40\% of accounts through puppeteering. They argue that community-level identity with subsidiarity offers structural advantages over global identity schemes, aligning with our per-community governance architecture.
@@ -139,6 +139,15 @@ This design rewards sustained participation: a voter attending all ceremonies ha
 
 Ohlhaver et al.~\cite{ohlhaver2024proof} found that Idena's analogous mechanism---one-pool-one-vote, which discounted influence for concentrated account pools---was decisive in enabling the protocol to pivot away from captured governance. Our participation weighting serves a similar function: it makes sustained, genuine engagement a prerequisite for governance influence.
 
+Figure~\ref{fig:electorate} illustrates how the eligible reputation window determines the electorate for a given proposal.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/democracy-electorate.pdf}
+\caption{Eligible reputations for voting. The electorate consists of reputations from ceremonies in the window $[c_s - R + L_p, \; c_s - 2]$, ensuring a stable voter set throughout the proposal lifetime.}
+\label{fig:electorate}
+\end{figure}
+
 \subsection{Adaptive Quorum Biasing}
 \label{sec:quorum}
 
@@ -159,7 +168,23 @@ At full turnout ($T = E$), the threshold is exactly $50\%$---a simple majority s
 
 Additionally, a \emph{MinTurnout} floor (expressed in per mille of the electorate) prevents proposals from passing when turnout is negligibly small, regardless of unanimity among voters.
 
-A proposal that meets the AQB threshold enters a \emph{Confirming} state. It must remain continuously passing for a confirmation period before transitioning to \emph{Approved} and entering the enactment queue. If the threshold is no longer met (e.g., due to new nay votes), the proposal returns to \emph{Ongoing}. If a proposal is not approved within its lifetime, it is \emph{Rejected}.
+Figure~\ref{fig:aqb-design} illustrates the AQB threshold curve with a minimum turnout of 5\%. The shaded region above the curve represents passing conditions.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/democracy-aqb.pdf}
+\caption{Adaptive quorum biasing: approval threshold as a function of turnout. The blue trace shows a possible trajectory where a proposal fluctuates between passing and failing before eventual confirmation (blue dot). A 5\% minimum turnout floor is applied.}
+\label{fig:aqb-design}
+\end{figure}
+
+A proposal that meets the AQB threshold enters a \emph{Confirming} state. It must remain continuously passing for a confirmation period before transitioning to \emph{Approved} and entering the enactment queue. If the threshold is no longer met (e.g., due to new nay votes), the proposal returns to \emph{Ongoing}. If a proposal is not approved within its lifetime, it is \emph{Rejected}. Figure~\ref{fig:state-machine} shows the complete proposal state machine.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/democracy-proposal-state-machine.pdf}
+\caption{Proposal state machine. Proposals transition between Ongoing and Confirming based on whether the AQB threshold is met. Approval requires passing continuously for the confirmation period. Proposals are cancelled if they expire or are superseded.}
+\label{fig:state-machine}
+\end{figure}
 
 %=====================================================================
 \section{Treasury Swap Governance for Community Currencies}
