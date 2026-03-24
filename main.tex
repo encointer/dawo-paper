@@ -144,7 +144,7 @@ Ohlhaver et al.~\cite{ohlhaver2024proof} found that Idena's analogous mechanism-
 
 A fixed majority threshold (e.g., 50\%) creates a legitimacy problem under variable turnout: a proposal passing with 51\% of a 5\% turnout represents support from only 2.5\% of the electorate. Conversely, requiring high absolute turnout causes governance paralysis when participation fluctuates.
 
-We adopt \emph{adaptive quorum biasing} (AQB) with a positive turnout bias. Let $E$ denote the electorate size, $T$ the total voting power of all voters (turnout), and $A$ the voting power of aye voters. The proposal passes if:
+We adopt \emph{adaptive quorum biasing} (AQB), first introduced in the Polkadot governance design~\cite{burdges2020overview}, with a positive turnout bias. Let $E$ denote the electorate size, $T$ the total voting power of all voters (turnout), and $A$ the voting power of aye voters. The proposal passes if:
 \begin{equation}
 \label{eq:aqb}
 \frac{T - A}{\sqrt{T}} < \frac{A}{\sqrt{E}}
