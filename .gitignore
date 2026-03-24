@@ -15,6 +15,9 @@
 *.ps
 *.pdf
 
+# Keep generated figures tracked
+!figures/*.pdf
+
 # Keep template PDFs tracked explicitly if needed
 # !authinst.pdf
 
@@ -29,3 +32,4 @@ Thumbs.db
 
 # Downloaded template zip
 LaTexPackage.zip
+__pycache__/

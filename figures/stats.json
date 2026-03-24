@@ -1,0 +1,63 @@
+{
+  "total_proposals": 67,
+  "proposals_by_type": {
+    "IssueSwapAssetOption": 27,
+    "SpendNative": 23,
+    "Petition": 11,
+    "UpdateNominalIncome": 3,
+    "UpdateDemurrage": 2,
+    "AddLocation": 1
+  },
+  "proposals_by_state": {
+    "Approved": 58,
+    "Rejected": 6,
+    "SupersededBy": 2,
+    "Confirming": 1
+  },
+  "total_votes_placed": 601,
+  "total_votes_failed": 183,
+  "aye_votes": 592,
+  "nay_votes": 9,
+  "communities": [
+    {
+      "name": "Leu Z\u00fcrich",
+      "cid": "u0qj944rhWE",
+      "ceremonies": 113,
+      "latest_participants": 3,
+      "peak_participants": 65
+    },
+    {
+      "name": "Green Bay Dollar",
+      "cid": "dpcmj33LUs9",
+      "ceremonies": 38,
+      "latest_participants": 4,
+      "peak_participants": 6
+    },
+    {
+      "name": "Nyota",
+      "cid": "kygch5kVGq7",
+      "ceremonies": 87,
+      "latest_participants": 37,
+      "peak_participants": 72
+    },
+    {
+      "name": "Paynuq",
+      "cid": "s1vrqQL2SD",
+      "ceremonies": 35,
+      "latest_participants": 29,
+      "peak_participants": 47
+    }
+  ],
+  "ceremony_Green Bay_total_ceremonies": 38,
+  "ceremony_Green Bay_mean_participants": 3.5,
+  "ceremony_PayNuQ_total_ceremonies": 35,
+  "ceremony_PayNuQ_mean_participants": 21.1,
+  "ceremony_Nyota_total_ceremonies": 87,
+  "ceremony_Nyota_mean_participants": 32.7,
+  "ceremony_Leu_total_ceremonies": 113,
+  "ceremony_Leu_mean_participants": 18.4,
+  "governance_start": "2024-12-02",
+  "governance_end": "2026-03-16",
+  "swap_options_granted": 22,
+  "swap_options_exercised": 36
+}
