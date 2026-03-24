@@ -2,13 +2,13 @@ MAIN = main
 LATEX = pdflatex
 BIBTEX = bibtex
 
-.PHONY: all clean
+.PHONY: all clean pdf
 
-all: $(MAIN).pdf
+all: pdf
 
-$(MAIN).pdf: $(MAIN).tex references.bib
+pdf:
 	TEXINPUTS=./styles//:$$TEXINPUTS $(LATEX) $(MAIN)
-	BIBINPUTS=./styles/bibtex//:$$BIBINPUTS $(BIBTEX) $(MAIN)
+	BSTINPUTS=./styles/bibtex//:$$BSTINPUTS BIBINPUTS=./styles/bibtex//:$$BIBINPUTS $(BIBTEX) $(MAIN)
 	TEXINPUTS=./styles//:$$TEXINPUTS $(LATEX) $(MAIN)
 	TEXINPUTS=./styles//:$$TEXINPUTS $(LATEX) $(MAIN)
 

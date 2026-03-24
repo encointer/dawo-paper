@@ -13,6 +13,7 @@ Use the LaTeX template provided by the conference.
 For the double-blind review, use latex commands for placeholders for project names and other deanonymizing terms. 
 If necessary, put placeholders for citations as well which could obviously reveal authors
 
+Never use em dashes (— or --) in your writing. Use alternative punctuation such as commas, colons, semicolons, or parentheses instead.
 
 # resources to use 
 
