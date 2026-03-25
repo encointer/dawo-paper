@@ -12,10 +12,10 @@ MONGO_URI = ('mongodb://encointer-query:rqTm4AFl9uCycSpbBEBj@'
 FIGURES_DIR = os.path.join(os.path.dirname(__file__), '..', 'figures')
 
 COMMUNITIES = {
-    'kygch5kVGq7': 'Community A',
-    'u0qj944rhWE': 'Community C',
-    's1vrqQL2SD': 'Community B',
-    'dpcmj33LUs9': 'Community D',
+    'u0qj944rhWE': 'Community A',
+    'dpcmj33LUs9': 'Community B',
+    'kygch5kVGq7': 'Community C',
+    's1vrqQL2SD': 'Community D',
 }
 
 # Springer single-column width ~3.5in, double ~7in
