@@ -35,7 +35,7 @@ Proof-of-Personhood Voting for DAO Resource Allocation}
 \maketitle
 
 \begin{abstract}
-Decentralized Autonomous Organizations (DAOs) typically govern treasury resources through token-weighted voting, producing plutocratic outcomes in which influence scales with capital. We present a field-deployed governance architecture that enables one-person-one-vote treasury allocation without reliance on centralized identity systems. Our approach combines decentralized proof-of-personhood (PoP) with on-chain democratic governance, where personhood is established through simultaneous, recurring physical key-signing ceremonies. Building on this identity foundation, we implement a governance protocol featuring open proposal submission, parallel competing proposals, participation-weighted voting power, and adaptive quorum biasing. We apply this democratic infrastructure to treasury swap governance in community currencies, enabling communities to democratically manage stablecoin-backed swap options for local businesses. The architecture is operational in two African communities. We present empirical findings from these deployments, analyzing participation patterns, voter turnout dynamics, and the effectiveness of adaptive quorum biasing in practice.
+Decentralized Autonomous Organizations (DAOs) typically govern treasury resources through token-weighted voting, producing plutocratic outcomes in which influence scales with capital. We present a field-deployed governance architecture that enables one-person-one-vote treasury allocation without reliance on centralized identity systems. Our approach combines decentralized proof-of-personhood (PoP) with on-chain democratic governance, where personhood is established through simultaneous, recurring physical key-signing ceremonies. Building on this foundation, we implement a governance protocol featuring open proposal submission, parallel competing proposals, participation-weighted voting power, and adaptive quorum biasing. We apply this democratic infrastructure to treasury governance in community currencies, enabling communities to democratically manage stablecoin-backed swap options for local businesses. The architecture is operational in two African communities. We present empirical findings from these deployments, analyzing participation patterns, voter turnout dynamics, and the effectiveness of adaptive quorum biasing in practice.
 %
 \keywords{DAO governance, proof-of-personhood, one-person-one-vote, democratic treasury management, community currencies}
 \end{abstract}
@@ -47,12 +47,14 @@ Decentralized Autonomous Organizations (DAOs) typically govern treasury resource
 
 Decentralized Autonomous Organizations (DAOs) manage billions of dollars in collective treasury assets, yet their governance mechanisms almost universally default to token-weighted voting: one token, one vote. This design produces plutocratic outcomes in which financial capital determines political power~\cite{schneider2024governable}. Empirical analysis of major DAOs confirms extreme concentration: Fritsch et al.~\cite{fritsch2024analyzing} find Gini coefficients of voting power exceeding 0.98 in Compound and Uniswap governance, with fewer than 10 delegates controlling a majority of decisions. Large token holders dominate proposal outcomes, while smaller participants (often the most active community members) are systematically marginalized. Schneider identifies this as a structural consequence of the ``personhood problem'': without a reliable way to verify that each participant is a unique human, pseudonymous blockchain systems cannot implement democratic alternatives.
 
+% TODO: do not cite buterin but rather world(coin) for biometrics but cite buterin for concerns about biometrics. Cite bridghtid for social graph and IDENA for concurrent reverse-turing tests
+% cite Boog for an overview and classification of PoP mechanisms: https://pub.tik.ee.ethz.ch/students/2025-FS/BA-2025-19.pdf
 Proof-of-personhood (PoP) protocols offer a path beyond this impasse. By establishing that each participant in a governance process is a distinct human being, PoP enables one-person-one-vote mechanisms that decouple political influence from financial stake. Several PoP approaches have been proposed, including biometric verification~\cite{buterin2023biometric}, social graph analysis, and physical ceremonies~\cite{ford2020identity}, each with distinct tradeoffs in privacy, accessibility, and decentralization.
 
 In this paper, we present a field-deployed governance architecture that combines ceremony-based PoP with on-chain democratic governance for treasury resource allocation. Our contributions are:
 \begin{enumerate}
 \item A democratic governance protocol built on PoP, featuring participation-weighted voting, adaptive quorum biasing, and parallel competing proposals (Section~\ref{sec:governance}).
-\item An application to treasury swap governance for community currencies, enabling communities to democratically manage stablecoin-backed swap options (Section~\ref{sec:treasury}).
+\item An application to treasury governance for community currencies, enabling communities to democratically manage stablecoin-backed swap options (Section~\ref{sec:treasury}).
 \item Empirical analysis from operational deployments in two African communities, including participation patterns, voting power distributions, and quorum dynamics (Section~\ref{sec:results}).
 \end{enumerate}
 
@@ -69,8 +71,9 @@ The dominant governance paradigm in DAOs is token-weighted voting, where influen
 \paragraph{Proof-of-Personhood.}
 Ford~\cite{ford2020identity} distinguishes \emph{identity} (divisive attributes) from \emph{personhood} (the inalienable right to participate equally) and evaluates PoP approaches against four criteria: inclusive, equal, secure, and private. Buterin~\cite{buterin2023biometric} taxonomizes PoP into social-graph-based, general-hardware biometric, and specialized-hardware biometric approaches, recommending hybrid strategies that combine multiple paradigms. Ohlhaver et al.~\cite{ohlhaver2024proof} conduct a deep empirical study of Idena, a ceremony-based PoP system, finding that while it achieved \emph{de jure} Sybil resistance (filtering bots), it failed at \emph{de facto} resistance: by May 2022, 23 entities controlled approximately 40\% of accounts through puppeteering. They argue that community-level identity with subsidiarity offers structural advantages over global identity schemes, aligning with our per-community governance architecture.
 
-\paragraph{Community Currencies.}
-Ruddick~\cite{ruddick2022grassroots} documents the evolution of community currencies from simple voucher systems to ``commitment pools'' (curated, valued, and limited agreements within overlapping economic networks). Drawing on over 100 deployments across Kenya and Uganda, the work identifies the accumulation problem (popular businesses hoarding excess tokens) as a persistent sustainability challenge and describes community governance traditions including rotating elder councils and consensus-based decision-making.
+%% we don't need this here as it is only the motivation to pick swap options as empirical research target. It is not the focuse of the paper to treat community currencies
+%\paragraph{Community Currencies.}
+%Ruddick~\cite{ruddick2022grassroots} documents the evolution of community currencies from simple voucher systems to ``commitment pools'' (curated, valued, and limited agreements within overlapping economic networks). Drawing on over 100 deployments across Kenya and Uganda, the work identifies the accumulation problem (popular businesses hoarding excess tokens) as a persistent sustainability challenge and describes community governance traditions including rotating elder councils and consensus-based decision-making.
 
 \paragraph{Democratic Design for Digital Spaces.}
 Schneider~\cite{schneider2024governable} proposes ``modular politics'': composable governance modules that communities can mix and match according to their needs. This framework motivates our architecture, where each community independently configures governance parameters (ceremony rewards, demurrage rates, treasury policies) while sharing the underlying PoP infrastructure. The cooperative tradition of one-member-one-vote provides historical precedent for the governance model we implement on-chain.
@@ -80,10 +83,11 @@ Schneider~\cite{schneider2024governable} proposes ``modular politics'': composab
 \label{sec:pop}
 %=====================================================================
 
-The identity foundation of our governance architecture is a decentralized proof-of-personhood (PoP) protocol based on physical key-signing ceremonies~\cite{brenzikofer2019encointer}. Unlike biometric approaches that require specialized hardware~\cite{buterin2023biometric} or government-issued identity documents that compromise privacy and exclude undocumented populations~\cite{ford2020identity}, this ceremony-based approach establishes personhood through simultaneous physical co-presence.
+% TODO: cite world(coin) not buterin for biometric)
+The uniqueness foundation of our governance architecture is a decentralized proof-of-personhood (PoP) protocol based on physical key-signing ceremonies~\cite{brenzikofer2019encointer}. Unlike biometric approaches that require specialized hardware~\cite{buterin2023biometric} or government-issued identity documents that may compromise privacy and exclude undocumented populations~\cite{ford2020identity}, this ceremony-based approach establishes personhood through simultaneous physical co-presence.
 
 \paragraph{Ceremony Mechanism.}
-Participants register for recurring ceremonies held at fixed intervals (currently every 10 days). At the designated time, registrants are randomly assigned to meetup locations where groups of 3--12 participants gather simultaneously. During the meetup, each participant performs pairwise cryptographic attestations with all other attendees, creating a mutual proof of physical co-presence. The assignment algorithm minimizes repeat encounters across ceremonies and limits newcomers to at most one quarter of each group, preventing rapid infiltration.
+Participants register for recurring ceremonies held at fixed intervals (currently every 10 days). At the designated time, registrants are randomly assigned to meetup locations where groups of 3--15 participants gather simultaneously. During the meetup, each participant performs pairwise cryptographic attestations with all other attendees, creating a mutual proof of physical co-presence. The assignment algorithm minimizes repeat encounters across ceremonies and limits newcomers to at most one quarter of each group, preventing rapid infiltration.
 
 The simultaneity constraint is critical: all ceremonies worldwide occur at the same moment (local solar noon), making it physically impossible for a single person to attend multiple meetups. This provides Sybil resistance without requiring biometric data or centralized identity verification.
 
@@ -92,8 +96,9 @@ Hoffmann~\cite{hoffmann2021security} provides a quantitative security analysis o
 
 The analysis identifies a \emph{friction threshold} of approximately 4.5\%: if the cost of recruiting a ceremony minion exceeds 4.5\% of the ceremony reward, no Sybil strategy is profitable within a two-year horizon. In practice, the ceremony reward of approximately \$2 combined with the logistical costs of coordinating physical attendance creates effective friction well above this threshold, particularly in communities where participants know each other.
 
-Ford~\cite{ford2020identity} critiques ceremony-based PoP by modeling small groups of 4 members. However, Hoffmann's analysis (conducted under Ford's own supervision) corrects this by analyzing the actual group sizes of 3--12, showing substantially stronger security guarantees. The puppeteering risks documented by Ohlhaver et al.~\cite{ohlhaver2024proof} for the Idena protocol, where operators paid \$2--\$14 per session for remote participants' keys, are structurally mitigated by the physical co-presence requirement: ceremony minions must physically travel to assigned locations, raising coordination costs and social detection risk.
+Ford~\cite{ford2020identity} critiques ceremony-based PoP by modeling small groups of 4 members. However, Hoffmann's analysis (conducted under Ford's own supervision) corrects this by analyzing the actual group sizes of 3--15, showing substantially stronger security guarantees. The puppeteering risks documented by Ohlhaver et al.~\cite{ohlhaver2024proof} for the Idena protocol, where operators paid \$2--\$14 per session for remote participants' keys, are structurally mitigated by the physical co-presence requirement: ceremony minions must physically travel to assigned locations, raising coordination costs and social detection risk.
 
+% TODO: fix the next paragraph: bootstrappers are predefined for the first ceremoncy of each community and never change thereafter. they are the trusted setup. explain more precisely: at each gathering, at least 2/3 of participants must have reputable status (at least one recent attestation). Newbies are assigned only subject to free seats under the previous rule reputables can each endorse 2 newbies to allow for faster growth. check protocol for reference: https://book.encointer.org/protocol-reputation.html
 \paragraph{Reputation Model.}
 Successful ceremony attendance earns a \emph{reputation} valid for a rolling window of $R = 5$ ceremonies. Participants progress through three statuses: \emph{Newbie} (first attendance), \emph{Reputable} (at least one prior successful ceremony), and \emph{Bootstrapper} (community founder with elevated trust). Reputation is non-transferable and decays automatically: a participant who stops attending loses all reputation within 5 cycles. This creates a \emph{liveness} requirement that continuously validates personhood, unlike one-time identity verification schemes.
 
@@ -119,7 +124,7 @@ Non-parameter actions (treasury spends, swap option grants, and petitions) do no
 \subsection{Participation-Weighted Voting Power}
 \label{sec:voting-power}
 
-Rather than assigning equal voting power to all eligible participants, the protocol weights votes by ceremony participation history. A voter's \emph{voting power} equals their reputation count within the eligible window for that proposal, i.e., the number of ceremonies successfully attended in recent cycles.
+A strict one-person-one-vote weighting is only possible with 100\% confidence in the PoP mechanism, which is not the case in our protocol. Rather than assigning equal voting power to all eligible participants, the protocol weights votes by ceremony participation history. A voter's \emph{voting power} equals their reputation count within the eligible window for that proposal, i.e., the number of ceremonies successfully attended in recent cycles. We will later analyze how well this approximates one-person-one-vote in reality.
 
 Formally, for a proposal submitted at ceremony index $c_s$, the eligible ceremony indices are:
 \begin{equation}
@@ -199,16 +204,19 @@ Our architecture addresses this through \emph{treasury swap options}: a communit
 \item A beneficiary address (the business receiving swap rights)
 \item An allowance (maximum stablecoin amount available for swap)
 \item An exchange rate (community currency units per stablecoin unit)
-\item A burn flag (whether swapped community currency is burned or returned to treasury)
-\item Optional validity window (start and end dates)
+% these are not actively used:
+%\item A burn flag (whether swapped community currency is burned or returned to treasury)
+%\item Optional validity window (start and end dates)
 \end{itemize}
 
-To exercise a swap option, the beneficiary sends community currency tokens to the treasury and receives stablecoins up to their remaining allowance. Each exercise reduces the allowance, preventing unlimited extraction. If the burn flag is set, the swapped community currency is permanently destroyed, reducing circulating supply; otherwise, it returns to the treasury for future distribution.
+To exercise a swap option, the beneficiary sends community currency tokens to the treasury and receives stablecoins up to their remaining allowance. Each exercise reduces the allowance, preventing unlimited extraction. The swapped community currency is permanently destroyed, reducing circulating supply.
 
 \paragraph{Safeguards Against Treasury Depletion.}
-Two community-level conventions protect treasuries from excessive extraction. First, a \emph{per-beneficiary limit} caps each swap option at 10\% of the treasury balance, ensuring no single business can drain a disproportionate share. Second, a 2\% \emph{exercise fee} is deducted from each swap, creating a cost of extraction that discourages speculative or unnecessary swaps. Both parameters are themselves subject to democratic governance; communities can adjust them through the standard proposal mechanism.
+Two community-level conventions protect treasuries from excessive extraction. First, a \emph{per-beneficiary limit} caps each swap option at 10\% of the unallocated treasury balance, ensuring no single business can drain a disproportionate share. Second, a 2\% \emph{exercise fee} is deducted from each swap, creating a cost of extraction that discourages speculative or unnecessary swaps. The choice of parameters has been negotiated with our communities and is subject to change.
 
 The critical design insight is that \emph{the community itself} decides who receives swap access and under what terms. Unlike centralized models where an administrator or foundation controls treasury outflows, every swap option must pass the adaptive quorum biasing threshold described in Section~\ref{sec:quorum}. This creates democratic accountability: businesses must maintain community trust to continue receiving swap access.
+
+% TODO: Argue that our (still unproven) hypothesis is that the community only needs to maintain a fractional reserve in its community treasury: Assuming a constant flow of subsidies into the communitiy treasury of R per month, we can generate a local turnover of N*R real value in the community  With a reserve of R we can sustain. Do deep research on this hypothesis and try to back it (or challenge it) with literature citing. 
 
 %=====================================================================
 \section{Field Deployment and Empirical Results}
@@ -218,15 +226,17 @@ The critical design insight is that \emph{the community itself} decides who rece
 \subsection{Deployment Context}
 \label{sec:deployments}
 
-The governance architecture has been operational since December 2024 across multiple communities. Table~\ref{tab:communities} summarizes the deployment context.
+The governance architecture has been operational since December 2024 across all communities. Swap options are deployed since January 2026. Table~\ref{tab:communities} summarizes the deployment context.
 
+% TODO rename chronologically: Leu should be community A, GreenBay B, Nyota C, PayNuq D
+% Question: should we mention Aslah here too? which was even before greenbay
 \begin{table}[t]
 \centering
 \caption{Community deployment summary as of March 2026.}
 \label{tab:communities}
 \begin{tabular}{lrrrr}
 \toprule
-Community & Ceremonies & Peak & Latest & Proposals \\
+Community & Ceremonies & Peak Reputables & Latest Reputables & Proposals Submitted \\
 \midrule
 Community A (East Africa) & 87 & 72 & 37 & 52 \\
 Community B (West Africa) & 35 & 47 & 29 & 10 \\
@@ -235,8 +245,9 @@ Community C (Europe) & 113 & 65 & 3 & 5 \\
 \end{tabular}
 \end{table}
 
-The primary deployment is Community~A in East Africa, where approximately 60 entrepreneurs (tailors, food vendors, and cosmetics sellers) participate in regular ceremonies. Community~B in West Africa has grown rapidly since its launch, reaching 47 participants at peak. Community~C in Europe served as an early testbed but has since declined in active participation.
+The primary deployment is Community~A in East Africa, where approximately 60 entrepreneurs (tailors, food vendors, and cosmetics sellers) participate in regular ceremonies and accept the local community currency for their goods and services. Community~B in West Africa has grown rapidly since its launch, reaching 47 participants at peak. Community~C in Europe served as an early testbed but has since declined in active participation.
 
+% TODO: nominal income and demurrage have not been introduced in this paper. reference the encointer whitepaper
 Over the observation period (December 2024 to March 2026), the governance system processed 67 proposals: 27 swap option grants, 23 native treasury spends, 11 petitions, 3 nominal income updates, 2 demurrage adjustments, and 1 location addition. Of these, 58 were approved and enacted, 6 were rejected (all due to expiration with zero votes), 2 were superseded by competing proposals, and 1 remains in confirming state.
 
 \subsection{Participation Patterns}
@@ -254,6 +265,7 @@ Figure~\ref{fig:ceremony} shows ceremony participation over time for each commun
 \paragraph{Voting Power Distribution.}
 Figure~\ref{fig:voting-power} shows the distribution of voting power across all 601 vote events. Voting power ranged from 1 to 3 (out of the theoretical maximum of 4), with a mean of 1.97 and median of 2. The distribution is relatively balanced: 28.8\% of votes were cast with power 1, 45.3\% with power 2, and 25.9\% with power 3. This indicates that most voters have attended multiple recent ceremonies but few achieve maximum participation, resulting in moderate power differentiation rather than the extreme inequality typical of token-weighted governance.
 
+% TODO: enhance these statistics: how many unique accounts have participated in voting? vs. how many unique accounts exist per community in total?
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.5\textwidth]{figures/fig-voting-power.pdf}
@@ -275,28 +287,35 @@ Figure~\ref{fig:aqb} visualizes the adaptive quorum biasing mechanism against em
 
 Of the 63 proposals that received at least one vote, the mean turnout was 11.5\% of the electorate and the mean approval rate among voters was 96.4\%. All voted-upon proposals achieved approval rates well above the AQB threshold at their respective turnout levels, resulting in enactment. The 6 rejected proposals all expired with zero turnout; no proposal has been actively voted down with nay votes exceeding the threshold.
 
-This pattern suggests two interpretations. Optimistically, the community achieves strong consensus before bringing proposals to a vote, and the AQB mechanism correctly interprets non-participation as implicit consent. Alternatively, the lack of contested proposals may reflect a community too small or too homogeneous for meaningful disagreement to emerge. We consider this a limitation: the AQB mechanism has not yet been stress-tested under adversarial or genuinely contested conditions.
+This pattern suggests two interpretations. Optimistically, the community achieves strong consensus before bringing proposals to a vote, and the AQB mechanism correctly interprets non-participation as implicit consent. Alternatively and more realistically, the lack of contested proposals may reflect a community too small or too homogeneous for meaningful disagreement to emerge. We consider this a limitation: the AQB mechanism has not yet been stress-tested under adversarial or genuinely contested conditions.
 
 \paragraph{Knowhow Asymmetry.}
 Analysis of proposal submitters reveals significant concentration: of 67 proposals, only 21 distinct accounts submitted proposals, with the top two accounts responsible for 45\% of all submissions. In contrast, 120 unique accounts cast votes, a substantially broader base but still a minority of ceremony participants. In practice, we observe that proposals are primarily submitted by community leaders who also educate the community about the governance system. This knowhow asymmetry creates an informal influence dynamic: community members with less technical understanding of the protocol tend to follow the opinion of those who explain it. In some cases, participants hand over their phones so that a single person can submit votes on their behalf, a form of voluntary delegation that is invisible on-chain, undermining the one-person-one-vote principle in practice.
+% TODO: it doesn't undermine 1p1v directly, but it undermines "agency" and comes close to puppetteering, even if community members are fully sovereign custodians of their wallet used for chain interactions.
 
-This represents a fundamental tension in our design: the governance protocol assumes an informed electorate capable of independently evaluating proposals, but the complexity of on-chain governance may exceed what can reasonably be expected of participants in low-resource settings. The gap between the protocol's democratic ideals and the social reality of facilitated participation is a limitation that cannot be resolved through mechanism design alone; it requires investment in governance literacy and accessible interfaces.
+This represents a fundamental tension in our design: the governance protocol assumes an informed electorate capable of independently evaluating proposals, but the complexity of on-chain governance may exceed what can reasonably be expected of participants. We observed similar patterns in our pilot Community~C in Europe: Even if people did not hand over their devices, the result was the same: voters followed the argumentation of the presumably \emph{knowledgeable} community leadership.
+
+The gap between the protocol's democratic ideals and the social reality of facilitated participation is a limitation that cannot be resolved through mechanism design alone; it requires investment in governance literacy, and accessible deliberation and user interfaces.
+
+% TODO: we should also reflect on how (little) impactful the proposals are for the lifes of voters. If the impact is little, the willingness to actively deliberate and educate oneself may be low. The more relevant the community currency becomes, the more would be at stake, enabling more interesting reasearch in the future
 
 \subsection{Treasury Swap Governance Outcomes}
 \label{sec:swap-results}
 
-The treasury swap governance mechanism has been most actively used in Community~A, where 20 of the 22 total swap options were granted. Figure~\ref{fig:treasury} shows the cumulative timeline of swap option grants and exercises.
+The treasury swap governance mechanism has been most actively used in Community~A, where 20 of the 22 total swap options were granted. Figure~\ref{fig:treasury} shows the cumulative timeline of swap option grants and exercises. 
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig-treasury-timeline.pdf}
-\caption{Cumulative timeline of treasury swap option grants and exercises across all communities.}
+\caption{Cumulative timeline of treasury swap option grants and exercises across all communities. The delay between approval and enactment was caused by a bug in our protocol which has been fixed recently.}
 \label{fig:treasury}
 \end{figure}
 
 Of these 22 granted swap options, 14 have been successfully exercised (12 in Community~A, 1 each in Communities B and C), indicating active utilization of the mechanism. The swap option proposals constitute 40\% of all governance proposals (27 of 67), making treasury management the dominant governance activity. This aligns with Ruddick's observation~\cite{ruddick2022grassroots} that managing the accumulation problem is a central concern in community currency sustainability.
 
-The per-beneficiary limit of 10\% of treasury balance and the 2\% exercise fee have not yet been tested under conditions of treasury scarcity. Current utilization levels suggest the mechanism is functioning as intended, providing democratic oversight of treasury outflows while enabling businesses to convert excess community currency to stablecoins.
+The per-beneficiary limit of 10\% of treasury balance and the 2\% exercise fee have not yet been tested over a longer term. Current utilization levels suggest the mechanism is functioning as intended, providing democratic oversight of treasury outflows while enabling businesses to convert excess community currency to stablecoins.
+
+% TODO: share qualitative feedback from our communities: The fact that community currency is eventually swappable into stablecoins and can be offramped to cash in hand has changed the perception of the community currency: before, it was perceived as experimental play money of lesser value than cash, now merchants make sure the payments really gets through as it is. But we have to mention that offramping is a major obstacle still, especially where people don't have credit cards or bank accounts. Offramping to mobile money is still quite involved, demands knowhow adn trust in intermediaries. 
 
 %=====================================================================
 \section{Discussion}
@@ -310,7 +329,7 @@ Our architecture demonstrates that DAOs can govern shared treasury resources thr
 Adaptive quorum biasing provides a principled mechanism for navigating the tension between governance agility and democratic legitimacy under variable turnout. Our empirical findings show that proposals consistently achieve high approval rates among those who vote, while the AQB threshold ensures that low-turnout decisions require near-unanimity. The observation that all rejected proposals expired with zero turnout (rather than being actively voted down) suggests that non-participation functions as a form of implicit consent or indifference, which AQB appropriately handles by raising the bar for passage.
 
 \paragraph{Limitations.}
-Several limitations constrain the generalizability of our findings. First, the dataset is small: 67 proposals across two active communities over approximately 16 months. Second, no proposal has been actively contested with significant nay votes; the AQB mechanism has not yet been tested under adversarial conditions. Third, the PoP ceremony mechanism introduces participation burden: attending physical meetups every 10 days is demanding, and ceremony attendance may be influenced by facilitators who help coordinate logistics, introducing an informal power dynamic not captured in the on-chain governance model. Fourth, the economic value of community currencies remains small (ceremony rewards of approximately \$2), which provides natural Sybil resistance through high effective friction but also limits the stakes of governance decisions. Whether the architecture maintains its democratic properties as economic value grows remains an open question.
+Several limitations constrain the generalizability of our findings. First, the dataset is small: 67 proposals across two active communities over approximately 16 months. Second, no proposal has been actively contested with significant nay votes; the AQB mechanism has not yet been tested under controversial conditions. Third, the PoP ceremony mechanism introduces participation burden: attending physical meetups every 10 days is demanding, and the matters to vote on are complex and require deep understanding of our protocols as well as economics, introducing an informal power dynamic not captured in the on-chain governance model. Fourth, the economic value of community currencies remains small (ceremony rewards of approximately \$2), which provides natural Sybil resistance through high effective friction but also limits the stakes of governance decisions. Whether the architecture maintains its democratic properties as economic value grows remains an open question.
 
 \paragraph{Generalizability.}
 The governance protocol is not specific to community currencies. Any DAO with a PoP identity layer could adopt the adaptive quorum biasing, participation-weighted voting, and parallel proposal mechanisms described here. The treasury swap governance application is domain-specific, but the underlying pattern (democratic oversight of resource allocation with per-beneficiary caps) applies broadly to grant programs, public goods funding, and other collective resource management scenarios.
@@ -324,8 +343,10 @@ However, the PoP mechanism itself is inherently local: it relies on geographical
 
 We presented a field-deployed governance architecture that enables democratic treasury management in DAOs without plutocratic token-weighted voting. By combining ceremony-based proof-of-personhood with participation-weighted voting and adaptive quorum biasing, the system achieves one-person-one-vote governance while maintaining agility under variable turnout. Applied to treasury swap governance in community currencies, the architecture allows communities to democratically manage stablecoin-backed swap options with per-beneficiary caps and exercise fees. Empirical analysis from deployments in two African communities demonstrates sustained participation, high governance activity, and effective quorum dynamics.
 
+% TODO: cite ring-VRF
 Future work should examine contested proposal dynamics as communities grow and privacy-preserving voting through ring-VRF-based anonymous credentials. Larger deployments will provide stronger evidence on whether the democratic properties of the governance architecture hold as the economic value of community currencies increases.
 
+% TODO: move up to generalizability
 \paragraph{Outlook: Toward Subsidiary Global Democracy.}
 A key limitation of ceremony-based PoP is its geographic locality: the mechanism depends on physical co-presence and social familiarity within small communities. Delacour~\cite{delacour2023global} proposes a path toward global-scale democratic governance by constructing a trust graph between communities rather than between individuals. The core insight is that liquidity providers in inter-community decentralized exchanges have economic skin in the game: backing a Sybil community risks impermanent loss when it inflates its currency. This self-interest in due diligence creates an economically grounded trust signal. Using a quadratic-voting-inspired trust metric and PageRank over the community trust graph, a globally trusted set of communities can be identified without centralized verification. The union of their disjoint local PoP protocols would then constitute a global proof-of-personhood, enabling subsidiary democracy, where governance decisions are made at the most local level possible but can scale to cross-community and global scope when needed.
 
