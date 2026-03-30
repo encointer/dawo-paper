@@ -10,51 +10,26 @@ def main():
     client = get_client()
     pindex = client['encointer-kusama-pindex']
 
-    # 1. Enacted treasury events (SpendNative, SpentAsset, GrantedSwapAssetOption)
+    # 1. SpendNative enacted (direct KSM payouts)
     spend_native = list(pindex.events.find({
         'section': 'encointerTreasuries', 'method': 'SpentNative'
     }).sort('timestamp', 1))
 
-    spend_asset = list(pindex.events.find({
-        'section': 'encointerTreasuries', 'method': 'SpentAsset'
-    }).sort('timestamp', 1))
-
+    # 2. SwapAsset granted (swap option enacted on-chain)
     granted_swap = list(pindex.events.find({
         'section': 'encointerTreasuries', 'method': 'GrantedSwapAssetOption'
     }).sort('timestamp', 1))
 
-    # 2. Exercised swaps
+    # 3. SwapAsset exercised (beneficiary exercises swap option)
     exercised = list(pindex.extrinsics.find({
         'section': 'encointerTreasuries',
         'method': {'$in': ['swapAsset', 'swapNative']},
         'success': True
     }).sort('timestamp', 1))
 
-    # 3. Approved proposals (before enactment)
-    # Get all treasury-related proposal submissions
-    submitted = list(pindex.events.find({
-        'section': 'encointerDemocracy', 'method': 'ProposalSubmitted',
-        '$or': [
-            {'data.proposalAction.IssueSwapAssetOption': {'$exists': True}},
-            {'data.proposalAction.SpendNative': {'$exists': True}},
-            {'data.proposalAction.SpendAsset': {'$exists': True}},
-            {'data.proposalAction.IssueSwapNativeOption': {'$exists': True}},
-        ]
-    }))
-    treasury_pids = [s['data']['proposalId'] for s in submitted]
-
-    approved = list(pindex.events.find({
-        'section': 'encointerDemocracy',
-        'method': 'ProposalStateUpdated',
-        'data.proposalId': {'$in': treasury_pids},
-        'data.proposalState': 'Approved'
-    }).sort('timestamp', 1))
-
     print(f"SpendNative enacted: {len(spend_native)}")
-    print(f"SpendAsset enacted: {len(spend_asset)}")
     print(f"SwapAsset granted: {len(granted_swap)}")
-    print(f"Swaps exercised: {len(exercised)}")
-    print(f"Treasury proposals approved: {len(approved)}")
+    print(f"SwapAsset exercised: {len(exercised)}")
 
     # 4. Build cumulative timelines
     def to_dt(ts):
@@ -62,9 +37,8 @@ def main():
 
     categories = {
         'SpendNative enacted': (spend_native, '#2ca02c', '-'),
-        'SpendAsset enacted': (spend_asset, '#9467bd', '-'),
         'SwapAsset granted': (granted_swap, '#1f77b4', '-'),
-        'Swap exercised': (exercised, '#ff7f0e', '--'),
+        'SwapAsset exercised': (exercised, '#ff7f0e', '--'),
     }
 
     fig, ax = plt.subplots(figsize=(FIG_WIDTH_DOUBLE, 2.4))
