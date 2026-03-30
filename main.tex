@@ -63,6 +63,7 @@ We begin with related work (Section~\ref{sec:related}), then describe the PoP me
 \label{sec:related}
 %=====================================================================
 
+% TODO: This is too much duplication of the introduction. I think the intro needs the context, but here we don't need to repeat it all.
 \paragraph{DAO Governance and Plutocracy.}
 The dominant governance paradigm in DAOs is token-weighted voting, where influence scales linearly with token holdings. Schneider~\cite{schneider2024governable} provides a systematic critique, arguing that this produces ``persistent plutocracy'' and ``implicit feudalism'': online spaces that default to autocratic or wealth-based control, eroding participants' capacity for democratic self-governance. Fritsch et al.~\cite{fritsch2024analyzing} provide empirical evidence across Compound, Uniswap, and ENS: voting power Gini coefficients exceed 0.98, and over 90\% of voting power in Compound and Uniswap resides with single-holder delegates, making these systems resemble shareholder meetings rather than democratic communities. Quadratic voting, conviction voting, and vote delegation have been proposed as mitigations, but all remain vulnerable to Sybil attacks when participants can cheaply create multiple identities.
 
@@ -144,6 +145,7 @@ Ohlhaver et al.~\cite{ohlhaver2024proof} found that Idena's analogous mechanism 
 
 Figure~\ref{fig:electorate} illustrates how the eligible reputation window determines the electorate for a given proposal.
 
+% TODO: remove this figure. It adds little value over formal definition.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/democracy-electorate.pdf}
@@ -190,10 +192,11 @@ A proposal that meets the AQB threshold enters a \emph{Confirming} state. It mus
 \end{figure}
 
 %=====================================================================
-\section{Treasury Swap Governance for Community Currencies}
+\section{Treasury Governance for Community Currencies}
 \label{sec:treasury}
 %=====================================================================
 
+% TODO: frame this as treasury governance in general, not only swap options. The latter should be the focus, but simpler to understand and start with are SpendNative proposals which simply pay out KSM tokens from treasury to a beneficiary if approved. This mechanism has been used frequently by Paynuq and Nyota communities to pay for community leadership
 Community currencies face a recurring sustainability challenge: popular businesses that attract many customers accumulate tokens faster than they can spend them within the local network. Ruddick~\cite{ruddick2022grassroots} documents this ``accumulation problem'' across over 100 community currency deployments in Kenya, where businesses with excess tokens lose motivation to continue accepting the currency, threatening network viability.
 
 \paragraph{Swap Options as Democratic Policy.}
@@ -226,13 +229,15 @@ We hypothesize that a community treasury need not maintain full backing for comm
 
 The governance architecture has been operational since December 2024 across all communities. Swap options are deployed since January 2026. Table~\ref{tab:communities} summarizes the deployment context.
 
+% todo: these numbers are wrong: reputables peaked at 155 for Leu community at cindex 38 (https://accounting.encointer.org/reputables-by-cindex). Reputable means the unique set of accounts with at least one attendance in the last 5 ceremony cycles
 \begin{table}[t]
 \centering
 \caption{Community deployment summary as of March 2026.}
 \label{tab:communities}
 \begin{tabular}{lrrrr}
 \toprule
-Community & Ceremonies & Peak Reputables & Latest Reputables & Proposals Submitted \\
+ & & Peak & Latest & Proposals \\
+Community & Ceremonies & Reputables & Reputables & Submitted \\
 \midrule
 Community A (Europe) & 113 & 65 & 3 & 5 \\
 Community C (East Africa) & 87 & 72 & 37 & 52 \\
@@ -267,6 +272,8 @@ Of the 799 unique accounts that have ever participated in ceremonies across all 
 \caption{Distribution of voting power across all 601 votes. Power equals the number of recent ceremonies attended, capped at 4.}
 \label{fig:voting-power}
 \end{figure}
+% TODO: Fig 5 only talks about the voting power of those wh did vote at all. This needs to be complemented by an analysis of non-voters. Draw a double-bar plot with voters and non-voters per voting power. 
+% TODO: the bar labels currently overlap with the figure border. Instead of plotting exect numbers, add a second y axis with absolute numbers. Or remove "Fraction of votes" labels and add relative numbers to the figure caption instead.
 
 \subsection{Adaptive Quorum Biasing in Practice}
 \label{sec:quorum-results}
@@ -304,6 +311,9 @@ The treasury swap governance mechanism has been most actively used in Community~
 \caption{Cumulative timeline of treasury swap option grants and exercises across all communities. The delay between approval and enactment was caused by a bug in our protocol which has been fixed recently.}
 \label{fig:treasury}
 \end{figure}
+% TODO: This plot should be about all treasury governance proposals not just swap options. SpendNative, SpendAsset, SwapNative as well. Of course, there is no "exercised" status for SpendNative and SpendAsset proposals as the payout happens upon enactment
+
+% TODO: add a figure of the real value distributed through SpendNative, SpendAsset, SwapNative and SwapAsset proposals until now. KSM should be valued at the daily exchange rate to USD on enactment day. Show a pie chart with slices for all non-zero categories: SpendNative(separate for approved and encated), SwapAsset (separate for approved, enacted and exercised). Put these amounts in perspective to community size and local purchasing power. 
 
 Of these 22 granted swap options, 15 have been successfully exercised (13 in Community~C, 1 each in Communities A and D), indicating active utilization of the mechanism. The swap option proposals constitute 40\% of all governance proposals (27 of 67), making treasury management the dominant governance activity. This aligns with Ruddick's observation~\cite{ruddick2022grassroots} that managing the accumulation problem is a central concern in community currency sustainability.
 
