@@ -1,57 +1,205 @@
 #!/usr/bin/env python3
-"""A2: Voting power distribution analysis."""
+"""Fig 5: Voting power distribution — voters vs non-voters double-bar plot.
+
+For each proposal, computes the electorate (accounts with eligible voting
+power) and identifies which electorate members voted. Participation rate
+per power level is averaged across all proposals.
+
+Eligible window per paper eq (1): ceremonies [c_s - R + L_p, c_s - 2],
+power capped at R-1 = 4. Most recent ceremony is excluded.
+"""
 from common import *
-from collections import Counter
+from collections import defaultdict, Counter
 import numpy as np
+
 
 def main():
     setup_style()
     client = get_client()
     pindex = client['encointer-kusama-pindex']
+    R = 5  # reputation lifetime
+    MAX_POWER = R - 1  # = 4
 
-    # Get all VotePlaced events with numVotes (= voting power)
-    votes = list(pindex.events.find({
-        'section': 'encointerDemocracy',
-        'method': 'VotePlaced'
+    GEOHASH_CID = {
+        'u0qj9': 'u0qj944rhWE', 's1vrq': 's1vrqQL2SD', 'kygch': 'kygch5kVGq7'
+    }
+
+    # 1. Build (cid, cindex) -> set(accounts) from Issued events
+    pipeline = [
+        {'$match': {'section': 'encointerBalances', 'method': 'Issued'}},
+        {'$lookup': {
+            'from': 'blocks', 'localField': 'blockNumber',
+            'foreignField': 'height', 'as': 'block'
+        }},
+        {'$unwind': '$block'},
+        {'$project': {
+            'cid': {'$arrayElemAt': ['$data', 0]},
+            'account': {'$arrayElemAt': ['$data', 1]},
+            'cindex': '$block.cindex',
+            'phase': '$block.phase'
+        }}
+    ]
+    issueds = list(pindex.events.aggregate(pipeline, allowDiskUse=True))
+
+    cid_ci_accts = defaultdict(lambda: defaultdict(set))
+    for r in issueds:
+        ci = r.get('cindex')
+        if ci is None:
+            continue
+        # Match backend: adjust for REGISTERING phase
+        if r.get('phase') == 'REGISTERING':
+            ci -= 1
+        cid_ci_accts[r['cid']][ci].add(r['account'])
+
+    # 2. Get proposals with startCindex and cid
+    submitted = list(pindex.events.find({
+        'section': 'encointerDemocracy', 'method': 'ProposalSubmitted'
     }))
+    proposals = {}
+    for s in submitted:
+        pid = s['data']['proposalId']
+        action = s['data'].get('proposalAction', {})
+        aval = list(action.values())[0] if isinstance(action, dict) else None
+        cid = None
+        if isinstance(aval, list) and aval and isinstance(aval[0], dict):
+            gh = aval[0].get('geohash', '')
+            cid = GEOHASH_CID.get(gh)
+        blk = pindex.blocks.find_one({'height': s['blockNumber']})
+        cs = blk['cindex'] if blk else None
+        proposals[pid] = {'cid': cid, 'cs': cs}
 
-    # Extract voting power per vote
-    powers = []
-    for v in votes:
-        nv = v['data'].get('numVotes', v['data'].get(2))
-        if nv is not None:
-            powers.append(int(nv))
+    # 3. Get voter addresses per proposal via extrinsic matching
+    vote_events = list(pindex.events.find({
+        'section': 'encointerDemocracy', 'method': 'VotePlaced'
+    }))
+    ext_ids = [v.get('extrinsicId') for v in vote_events if v.get('extrinsicId')]
+    extrinsics = {e['_id']: e for e in pindex.extrinsics.find({'_id': {'$in': ext_ids}})}
 
-    power_counts = Counter(powers)
-    max_power = max(powers) if powers else 4
+    voters_per_proposal = defaultdict(set)
+    for v in vote_events:
+        ext = extrinsics.get(v.get('extrinsicId'))
+        if not ext:
+            continue
+        pid = v['data'].get('proposalId', v['data'].get(0))
+        signer = ext.get('signer', {})
+        addr = signer.get('Id', '') if isinstance(signer, dict) else str(signer)
+        if pid and addr:
+            voters_per_proposal[pid].add(addr)
 
-    print(f"Total votes: {len(powers)}")
-    print(f"Power distribution: {dict(sorted(power_counts.items()))}")
-    print(f"Mean voting power: {np.mean(powers):.2f}")
-    print(f"Median voting power: {np.median(powers):.1f}")
+    # 4. Per proposal: compute electorate power, split voters/non-voters
+    # For each proposal, compute per-power-level voter and non-voter counts.
+    # Then average across proposals so each proposal contributes equally
+    # and accounts are not inflated by appearing in multiple electorates.
+    levels = list(range(1, MAX_POWER + 1))
 
-    # Plot
-    fig, ax = plt.subplots(figsize=(FIG_WIDTH_SINGLE, 2.5))
+    # per_proposal_data[pid] = {power: {'voters': n, 'nonvoters': n}}
+    per_proposal_data = []
 
-    levels = list(range(1, max_power + 1))
-    counts = [power_counts.get(p, 0) for p in levels]
-    total = sum(counts)
-    fractions = [c / total * 100 for c in counts]
+    for pid, pinfo in proposals.items():
+        cid = pinfo['cid']
+        cs = pinfo['cs']
+        if not cid or not cs:
+            continue
 
-    bars = ax.bar(levels, fractions, color='#4878a8', edgecolor='black', linewidth=0.5)
-    ax.set_xlabel('Voting Power')
-    ax.set_ylabel('Fraction of Votes (%)')
-    ax.set_xticks(levels)
-    ax.set_ylim(bottom=0)
+        ca = cid_ci_accts[cid]
 
-    # Annotate bars with counts
-    for bar, count in zip(bars, counts):
-        if count > 0:
-            ax.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 1,
-                    f'n={count}', ha='center', va='bottom', fontsize=6)
+        # Eligible window: exclude most recent ceremony (cs itself)
+        # Use [cs - R + 1, cs - 1] = 4 ceremonies max
+        window_end = cs - 1
+        window_start = cs - R + 1
+
+        # Compute each eligible account's power
+        acct_power = Counter()
+        for ci in range(window_start, window_end + 1):
+            for acct in ca.get(ci, set()):
+                acct_power[acct] += 1
+
+        # Cap at MAX_POWER
+        for acct in acct_power:
+            acct_power[acct] = min(acct_power[acct], MAX_POWER)
+
+        if not acct_power:
+            continue
+
+        voted = voters_per_proposal.get(pid, set())
+
+        counts = {}
+        for p in levels:
+            v = sum(1 for a, pw in acct_power.items() if pw == p and a in voted)
+            nv = sum(1 for a, pw in acct_power.items() if pw == p and a not in voted)
+            counts[p] = {'voters': v, 'nonvoters': nv}
+        per_proposal_data.append(counts)
+
+    n_proposals = len(per_proposal_data)
+    print(f"Proposals with computable electorate: {n_proposals}")
+
+    # Average counts across proposals
+    mean_voters = []
+    mean_nonvoters = []
+    for p in levels:
+        v_vals = [d[p]['voters'] for d in per_proposal_data]
+        nv_vals = [d[p]['nonvoters'] for d in per_proposal_data]
+        mv = np.mean(v_vals)
+        mnv = np.mean(nv_vals)
+        mean_voters.append(mv)
+        mean_nonvoters.append(mnv)
+        rate = mv / (mv + mnv) * 100 if (mv + mnv) > 0 else 0
+        print(f"  Power {p}: mean voters {mv:.1f}, mean non-voters {mnv:.1f}, "
+              f"participation rate {rate:.1f}%")
+
+    # 5. Compute Gaussian fit for voter power distribution
+    # Reconstruct weighted samples from mean counts for mean/std
+    total_mean_voters = sum(mean_voters)
+    weights = [mv / total_mean_voters for mv in mean_voters]
+    mu = sum(p * w for p, w in zip(levels, weights))
+    var = sum((p - mu) ** 2 * w for p, w in zip(levels, weights))
+    sigma = np.sqrt(var)
+    print(f"\nVoter power: mean={mu:.2f}, std={sigma:.2f}")
+
+    participation_rates = []
+    for mv, mnv in zip(mean_voters, mean_nonvoters):
+        total = mv + mnv
+        participation_rates.append(mv / total * 100 if total > 0 else 0)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FIG_WIDTH_DOUBLE, 2.5))
+
+    x = np.arange(len(levels))
+    width = 0.5
+
+    # Left: voter voting power distribution with Gaussian fit
+    ax1.bar(x, mean_voters, width, color='#4878a8',
+            edgecolor='black', linewidth=0.5)
+
+    # Gaussian curve scaled to match bar heights
+    x_fine = np.linspace(-0.5, len(levels) - 0.5, 200)
+    gauss = np.exp(-0.5 * ((x_fine + levels[0] - mu) / sigma) ** 2)
+    gauss = gauss / gauss.max() * max(mean_voters)
+    ax1.plot(x_fine, gauss, 'r--', linewidth=1.0,
+             label=f'$\\mu={mu:.2f},\\ \\sigma={sigma:.2f}$')
+
+    ax1.set_xlabel('Voting Power')
+    ax1.set_ylabel('Mean Voters per Proposal')
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(levels)
+    ax1.set_ylim(0, max(mean_voters) * 1.35)
+    ax1.legend(fontsize=6)
+    ax1.grid(True, linestyle=':', linewidth=0.5, alpha=0.7)
+
+    # Right: participation rate vs voting power
+    ax2.bar(x, participation_rates, width, color='#4878a8',
+            edgecolor='black', linewidth=0.5)
+    ax2.set_xlabel('Voting Power')
+    ax2.set_ylabel('Participation Rate (%)')
+    ax2.set_xticks(x)
+    ax2.set_xticklabels(levels)
+    ax2.set_ylim(0, max(participation_rates) * 1.25)
+    ax2.grid(True, linestyle=':', linewidth=0.5, alpha=0.7)
+
+    fig.tight_layout(w_pad=2.0)
 
     savefig(fig, 'fig-voting-power.pdf')
     client.close()
+
 
 if __name__ == '__main__':
     main()

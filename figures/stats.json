@@ -1,29 +1,29 @@
 {
-  "total_proposals": 67,
+  "total_proposals": 72,
   "proposals_by_type": {
-    "IssueSwapAssetOption": 27,
+    "IssueSwapAssetOption": 31,
     "SpendNative": 23,
-    "Petition": 11,
+    "Petition": 12,
     "UpdateNominalIncome": 3,
     "UpdateDemurrage": 2,
     "AddLocation": 1
   },
   "proposals_by_state": {
-    "Approved": 58,
+    "Approved": 63,
     "Rejected": 6,
     "SupersededBy": 2,
-    "Confirming": 1
+    "Ongoing": 1
   },
-  "total_votes_placed": 601,
-  "total_votes_failed": 183,
-  "aye_votes": 592,
+  "total_votes_placed": 687,
+  "total_votes_failed": 263,
+  "aye_votes": 678,
   "nay_votes": 9,
   "communities": [
     {
       "name": "Leu Z\u00fcrich",
       "cid": "u0qj944rhWE",
-      "ceremonies": 113,
-      "latest_participants": 3,
+      "ceremonies": 114,
+      "latest_participants": 5,
       "peak_participants": 65
     },
     {
@@ -36,29 +36,29 @@
     {
       "name": "Nyota",
       "cid": "kygch5kVGq7",
-      "ceremonies": 87,
-      "latest_participants": 37,
+      "ceremonies": 88,
+      "latest_participants": 36,
       "peak_participants": 72
     },
     {
       "name": "Paynuq",
       "cid": "s1vrqQL2SD",
-      "ceremonies": 35,
-      "latest_participants": 29,
+      "ceremonies": 36,
+      "latest_participants": 28,
       "peak_participants": 47
     }
   ],
   "ceremony_Community B_total_ceremonies": 38,
   "ceremony_Community B_mean_participants": 3.5,
-  "ceremony_Community D_total_ceremonies": 35,
-  "ceremony_Community D_mean_participants": 21.1,
-  "ceremony_Community C_total_ceremonies": 87,
+  "ceremony_Community D_total_ceremonies": 36,
+  "ceremony_Community D_mean_participants": 21.3,
+  "ceremony_Community C_total_ceremonies": 88,
   "ceremony_Community C_mean_participants": 32.7,
-  "ceremony_Community A_total_ceremonies": 113,
-  "ceremony_Community A_mean_participants": 18.4,
+  "ceremony_Community A_total_ceremonies": 114,
+  "ceremony_Community A_mean_participants": 18.3,
   "governance_start": "2024-12-02",
-  "governance_end": "2026-03-16",
+  "governance_end": "2026-03-27",
   "swap_options_granted": 22,
-  "swap_options_exercised": 15,
+  "swap_options_exercised": 17,
   "treasury_native_spends": 22
 }

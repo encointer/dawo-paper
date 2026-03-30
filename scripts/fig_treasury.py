@@ -1,134 +1,98 @@
 #!/usr/bin/env python3
-"""A6: Treasury swap option activity timeline."""
+"""Fig: Treasury governance timeline — all proposal types."""
 from common import *
 from datetime import datetime, timezone
+from collections import defaultdict
+
 
 def main():
     setup_style()
     client = get_client()
     pindex = client['encointer-kusama-pindex']
 
-    # Granted swap options
-    granted = list(pindex.events.find({
-        'section': 'encointerTreasuries',
-        'method': 'GrantedSwapAssetOption'
+    # 1. Enacted treasury events (SpendNative, SpentAsset, GrantedSwapAssetOption)
+    spend_native = list(pindex.events.find({
+        'section': 'encointerTreasuries', 'method': 'SpentNative'
     }).sort('timestamp', 1))
 
-    # Swap exercises are extrinsics (swapAsset / swapNative), not events
-    exercises = list(pindex.extrinsics.find({
+    spend_asset = list(pindex.events.find({
+        'section': 'encointerTreasuries', 'method': 'SpentAsset'
+    }).sort('timestamp', 1))
+
+    granted_swap = list(pindex.events.find({
+        'section': 'encointerTreasuries', 'method': 'GrantedSwapAssetOption'
+    }).sort('timestamp', 1))
+
+    # 2. Exercised swaps
+    exercised = list(pindex.extrinsics.find({
         'section': 'encointerTreasuries',
         'method': {'$in': ['swapAsset', 'swapNative']},
         'success': True
     }).sort('timestamp', 1))
 
-    # Approved swap option proposals (submitted but not yet enacted)
+    # 3. Approved proposals (before enactment)
+    # Get all treasury-related proposal submissions
     submitted = list(pindex.events.find({
-        'section': 'encointerDemocracy',
-        'method': 'ProposalSubmitted',
-        'data.proposalAction.IssueSwapAssetOption': {'$exists': True}
+        'section': 'encointerDemocracy', 'method': 'ProposalSubmitted',
+        '$or': [
+            {'data.proposalAction.IssueSwapAssetOption': {'$exists': True}},
+            {'data.proposalAction.SpendNative': {'$exists': True}},
+            {'data.proposalAction.SpendAsset': {'$exists': True}},
+            {'data.proposalAction.IssueSwapNativeOption': {'$exists': True}},
+        ]
     }))
-    swap_pids = [s['data']['proposalId'] for s in submitted]
+    treasury_pids = [s['data']['proposalId'] for s in submitted]
 
     approved = list(pindex.events.find({
         'section': 'encointerDemocracy',
         'method': 'ProposalStateUpdated',
-        'data.proposalId': {'$in': swap_pids},
+        'data.proposalId': {'$in': treasury_pids},
         'data.proposalState': 'Approved'
     }).sort('timestamp', 1))
 
-    print(f"Swap option proposals submitted: {len(submitted)}")
-    print(f"Swap option proposals approved: {len(approved)}")
-    print(f"Swap options granted (enacted): {len(granted)}")
-    print(f"Swap options exercised (successful): {len(exercises)}")
+    print(f"SpendNative enacted: {len(spend_native)}")
+    print(f"SpendAsset enacted: {len(spend_asset)}")
+    print(f"SwapAsset granted: {len(granted_swap)}")
+    print(f"Swaps exercised: {len(exercised)}")
+    print(f"Treasury proposals approved: {len(approved)}")
 
-    # Group by community
-    from collections import defaultdict
-    by_cid = defaultdict(list)
-    for g in granted:
-        cid_data = g['data'].get('cid', '')
-        ts = g.get('timestamp', 0)
-        by_cid[cid_data].append({
-            'type': 'granted',
-            'timestamp': ts,
-            'method': g['method']
-        })
+    # 4. Build cumulative timelines
+    def to_dt(ts):
+        return datetime.fromtimestamp(ts / 1000, tz=timezone.utc)
 
-    for ex in exercises:
-        # Extrinsics use args.cid, not data.cid
-        cid_data = ex.get('args', {}).get('cid', '')
-        ts = ex.get('timestamp', 0)
-        by_cid[cid_data].append({
-            'type': 'exercised',
-            'timestamp': ts,
-            'method': ex['method']
-        })
+    categories = {
+        'SpendNative enacted': (spend_native, '#2ca02c', '-'),
+        'SpendAsset enacted': (spend_asset, '#9467bd', '-'),
+        'SwapAsset granted': (granted_swap, '#1f77b4', '-'),
+        'Swap exercised': (exercised, '#ff7f0e', '--'),
+    }
 
-    for cid, events in by_cid.items():
-        name = COMMUNITIES.get(cid, cid)
-        n_granted = sum(1 for e in events if e['type'] == 'granted')
-        n_exercised = sum(1 for e in events if e['type'] == 'exercised')
-        print(f"  {name}: {n_granted} granted, {n_exercised} exercised")
+    fig, ax = plt.subplots(figsize=(FIG_WIDTH_DOUBLE, 2.4))
 
-    # Plot timeline of all swap events
-    fig, ax = plt.subplots(figsize=(FIG_WIDTH_DOUBLE, 2.0))
-
-    # Build event list with three types
-    all_events = []
-    for a in approved:
-        ts = a.get('timestamp', 0)
-        if ts:
-            all_events.append((ts, 'Approved'))
-    for g in granted:
-        ts = g.get('timestamp', 0)
-        if ts:
-            all_events.append((ts, 'Granted'))
-    for ex in exercises:
-        ts = ex.get('timestamp', 0)
-        if ts:
-            all_events.append((ts, 'Exercised'))
-
-    all_events.sort()
-
-    if all_events:
-        a_dates, a_cum = [], []
-        g_dates, g_cum = [], []
-        e_dates, e_cum = [], []
-        a_count = g_count = e_count = 0
-
-        for ts, typ in all_events:
-            d = datetime.fromtimestamp(ts / 1000, tz=timezone.utc)
-            if typ == 'Approved':
-                a_count += 1
-                a_dates.append(d)
-                a_cum.append(a_count)
-            elif typ == 'Granted':
-                g_count += 1
-                g_dates.append(d)
-                g_cum.append(g_count)
-            else:
-                e_count += 1
-                e_dates.append(d)
-                e_cum.append(e_count)
-
-        ax.step(a_dates, a_cum, where='post', linewidth=1.2,
-                color='#aaaaaa', linestyle='--',
-                label=f'Approved (n={a_count})')
-        ax.step(g_dates, g_cum, where='post', linewidth=1.2,
-                color='#1f77b4',
-                label=f'Granted / enacted (n={g_count})')
-        if e_dates:
-            ax.step(e_dates, e_cum, where='post', linewidth=1.2,
-                    color='#2ca02c',
-                    label=f'Exercised (n={e_count})')
+    for label, (events, color, ls) in categories.items():
+        if not events:
+            continue
+        timestamps = []
+        for e in events:
+            ts = e.get('timestamp', 0)
+            if ts:
+                timestamps.append(ts)
+        timestamps.sort()
+        dates = [to_dt(ts) for ts in timestamps]
+        cumulative = list(range(1, len(dates) + 1))
+        ax.step(dates, cumulative, where='post', linewidth=1.2,
+                color=color, linestyle=ls,
+                label=f'{label} (n={len(dates)})')
 
     ax.set_xlabel('Date')
-    ax.set_ylabel('Swap Options')
-    ax.legend(fontsize=7)
+    ax.set_ylabel('Cumulative Count')
+    ax.legend(fontsize=6, loc='upper left')
     ax.set_ylim(bottom=0)
     fig.autofmt_xdate()
 
     savefig(fig, 'fig-treasury-timeline.pdf')
     client.close()
+
 
 if __name__ == '__main__':
     main()
