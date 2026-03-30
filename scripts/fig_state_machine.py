@@ -7,17 +7,17 @@ def main():
     setup_style()
     fig, ax = plt.subplots(figsize=(FIG_WIDTH_DOUBLE + 1.0, 3.6))
     ax.set_xlim(-1.8, 11.0)
-    ax.set_ylim(-1.4, 3.8)
+    ax.set_ylim(-1.4, 4.2)
     ax.set_aspect('equal')
     ax.axis('off')
 
     # Layout: top row = happy path, bottom row = terminal failure states
     states = {
-        'Ongoing':      (1.5, 2.0),
+        'Ongoing':      (0.5, 2.0),
         'Confirming':   (4.5, 2.0),
-        'Approved':     (7.5, 2.0),
-        'Enacted':      (7.5, 3.2),
-        'Rejected':     (1.5, -0.5),
+        'Approved':     (8.5, 2.0),
+        'Enacted':      (8.5, 3.5),
+        'Rejected':     (0.5, -0.5),
         'SupersededBy': (4.5, -0.5),
     }
 
@@ -58,8 +58,8 @@ def main():
                     fontsize=fontsize, color='#444444', fontstyle='italic')
 
     # Submit -> Ongoing
-    arrow(-0.6, 2.0, states['Ongoing'][0] - bw2, 2.0,
-          'submit', lbl_x=-0.2, lbl_y=2.25)
+    arrow(-1.6, 2.0, states['Ongoing'][0] - bw2, 2.0,
+          'submit', lbl_x=-1.2, lbl_y=2.25)
 
     # Ongoing -> Confirming (passing AQB threshold)
     arrow(states['Ongoing'][0] + bw2, 2.1,
@@ -78,18 +78,18 @@ def main():
 
     # Approved -> Enacted (at next Assigning phase)
     arrow(states['Approved'][0], 2.0 + bh2,
-          states['Enacted'][0], 3.2 - bh2,
-          'enacted at next\nceremony cycle', lbl_x=8.5, lbl_y=2.65, fontsize=5.5)
+          states['Enacted'][0], 3.5 - bh2,
+          'enacted at next\nceremony cycle', lbl_x=9.5, lbl_y=2.75, fontsize=5.5)
 
     # Ongoing -> Rejected (lifetime expired)
     arrow(states['Ongoing'][0], 2.0 - bh2,
           states['Rejected'][0], -0.5 + bh2,
-          'lifetime expired', lbl_x=0.7, lbl_y=0.75, fontsize=5.5)
+          'lifetime expired', lbl_x=-0.2, lbl_y=0.75, fontsize=5.5)
 
     # Ongoing -> SupersededBy (same action type approved by another proposal)
     arrow(states['Ongoing'][0] + 0.5, 2.0 - bh2,
           states['SupersededBy'][0] - 0.5, -0.5 + bh2,
-          'same type\napproved', lbl_x=2.4, lbl_y=0.65, fontsize=5.5)
+          'same type\napproved', lbl_x=1.8, lbl_y=0.65, fontsize=5.5)
 
     # Confirming -> SupersededBy
     arrow(states['Confirming'][0], 2.0 - bh2,

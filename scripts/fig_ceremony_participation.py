@@ -56,7 +56,7 @@ def main():
     ax1.set_ylabel('Participants Rewarded')
     ax1.legend(loc='upper left')
     ax1.set_ylim(bottom=0)
-
+    ax1.grid(True, linestyle=':', linewidth=0.5, alpha=0.7)
     # Second x-axis with dates
     ax2 = ax1.twiny()
     ci_min, ci_max = min(all_cindexes), max(all_cindexes)

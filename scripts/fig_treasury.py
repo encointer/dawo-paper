@@ -62,6 +62,7 @@ def main():
     ax.set_ylabel('Cumulative Count')
     ax.legend(fontsize=6, loc='upper left')
     ax.set_ylim(bottom=0)
+    ax.grid(True, linestyle=':', linewidth=0.5, alpha=0.7)
     fig.autofmt_xdate()
 
     savefig(fig, 'fig-treasury-timeline.pdf')
