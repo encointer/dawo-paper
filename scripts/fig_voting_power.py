@@ -5,8 +5,10 @@ For each proposal, computes the electorate (accounts with eligible voting
 power) and identifies which electorate members voted. Participation rate
 per power level is averaged across all proposals.
 
-Eligible window per paper eq (1): ceremonies [c_s - R + L_p, c_s - 2],
-power capped at R-1 = 4. Most recent ceremony is excluded.
+The pallet's voting_cindexes function defines the eligible window as
+[cs - R + proposal_lifetime_cycles, cs - 2], where cs is the proposal's
+start_cindex. With R=5 and proposal_lifetime_cycles=1: max power = 3.
+Ceremony cs-1 is deliberately excluded by the pallet (saturating_sub(2)).
 """
 from common import *
 from collections import defaultdict, Counter
@@ -18,7 +20,7 @@ def main():
     client = get_client()
     pindex = client['encointer-kusama-pindex']
     R = 5  # reputation lifetime
-    MAX_POWER = R - 1  # = 4
+    MAX_POWER = R - 2  # = 3
 
     GEOHASH_CID = {
         'u0qj9': 'u0qj944rhWE', 's1vrq': 's1vrqQL2SD', 'kygch': 'kygch5kVGq7'
@@ -86,13 +88,10 @@ def main():
         if pid and addr:
             voters_per_proposal[pid].add(addr)
 
-    # 4. Per proposal: compute electorate power, split voters/non-voters
-    # For each proposal, compute per-power-level voter and non-voter counts.
-    # Then average across proposals so each proposal contributes equally
-    # and accounts are not inflated by appearing in multiple electorates.
+    # 4. Per proposal: compute electorate power, split voters/non-voters.
+    #    Pallet window: [cs - R + proposal_lifetime_cycles, cs - 2].
+    #    With R=5, proposal_lifetime_cycles=1: [cs-4, cs-2], max power = 3.
     levels = list(range(1, MAX_POWER + 1))
-
-    # per_proposal_data[pid] = {power: {'voters': n, 'nonvoters': n}}
     per_proposal_data = []
 
     for pid, pinfo in proposals.items():
@@ -103,18 +102,14 @@ def main():
 
         ca = cid_ci_accts[cid]
 
-        # Eligible window: exclude most recent ceremony (cs itself)
-        # Use [cs - R + 1, cs - 1] = 4 ceremonies max
-        window_end = cs - 1
+        # Pallet window: cs-2 is the upper bound (saturating_sub(2))
         window_start = cs - R + 1
+        window_end = cs - 2
 
-        # Compute each eligible account's power
         acct_power = Counter()
         for ci in range(window_start, window_end + 1):
             for acct in ca.get(ci, set()):
                 acct_power[acct] += 1
-
-        # Cap at MAX_POWER
         for acct in acct_power:
             acct_power[acct] = min(acct_power[acct], MAX_POWER)
 
@@ -136,6 +131,7 @@ def main():
     # Average counts across proposals
     mean_voters = []
     mean_nonvoters = []
+    participation_rates = []
     for p in levels:
         v_vals = [d[p]['voters'] for d in per_proposal_data]
         nv_vals = [d[p]['nonvoters'] for d in per_proposal_data]
@@ -143,23 +139,24 @@ def main():
         mnv = np.mean(nv_vals)
         mean_voters.append(mv)
         mean_nonvoters.append(mnv)
-        rate = mv / (mv + mnv) * 100 if (mv + mnv) > 0 else 0
+        # Participation: mean of per-proposal ratios (equal weight per proposal)
+        rates = []
+        for d in per_proposal_data:
+            eligible = d[p]['voters'] + d[p]['nonvoters']
+            if eligible > 0:
+                rates.append(d[p]['voters'] / eligible)
+        rate = np.mean(rates) * 100 if rates else 0
+        participation_rates.append(rate)
         print(f"  Power {p}: mean voters {mv:.1f}, mean non-voters {mnv:.1f}, "
               f"participation rate {rate:.1f}%")
 
     # 5. Compute Gaussian fit for voter power distribution
-    # Reconstruct weighted samples from mean counts for mean/std
     total_mean_voters = sum(mean_voters)
     weights = [mv / total_mean_voters for mv in mean_voters]
     mu = sum(p * w for p, w in zip(levels, weights))
     var = sum((p - mu) ** 2 * w for p, w in zip(levels, weights))
     sigma = np.sqrt(var)
     print(f"\nVoter power: mean={mu:.2f}, std={sigma:.2f}")
-
-    participation_rates = []
-    for mv, mnv in zip(mean_voters, mean_nonvoters):
-        total = mv + mnv
-        participation_rates.append(mv / total * 100 if total > 0 else 0)
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FIG_WIDTH_DOUBLE, 2.5))
 

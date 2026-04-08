@@ -127,7 +127,7 @@ Formally, for a proposal submitted at ceremony index $c_s$, the eligible ceremon
 \label{eq:voting-window}
 \mathcal{C} = \{c_s - R + L_p, \ldots, c_s - 2\}
 \end{equation}
-where $R$ is the reputation lifetime (5 ceremonies) and $L_p$ is the proposal lifetime in cycles. A voter's power is $v = |\{c \in \mathcal{C} : \text{voter attended ceremony } c\}|$, capped at $R - 1 = 4$.
+where $R$ is the reputation lifetime (5 ceremonies) and $L_p$ is the proposal lifetime in cycles ($L_p = 1$ in our deployment). A voter's power is $v = |\{c \in \mathcal{C} : \text{voter attended ceremony } c\}|$, capped at $|\mathcal{C}| = R - 1 - L_p = 3$.
 
 The upper bound of the eligible window ($c_s - 2$) excludes the most recent ceremony, creating a one-cycle delay. This prevents last-minute Sybil infiltration: an attacker cannot register new identities and immediately deploy them in a governance vote. The lower bound ensures that the oldest eligible reputations still exist at the end of the proposal lifetime, guaranteeing a stable electorate throughout the voting period.
 
@@ -136,7 +136,7 @@ The total electorate $E$ is the sum of reputation counts across all eligible cer
 E = \sum_{c \in \mathcal{C}} \text{reputationCount}(c)
 \end{equation}
 
-This design rewards sustained participation: a voter attending all ceremonies has 4$\times$ the influence of a voter attending only once. The cap at $4\times$ bounds inequality, in contrast to token-weighted voting where power differences can span orders of magnitude. Inactive participants lose voting power automatically as their reputations expire, keeping the electorate current.
+This design rewards sustained participation: a voter attending all eligible ceremonies has 3$\times$ the influence of a voter attending only once. The cap at $3\times$ bounds inequality, in contrast to token-weighted voting where power differences can span orders of magnitude. Inactive participants lose voting power automatically as their reputations expire, keeping the electorate current.
 
 Ohlhaver et al.~\cite{ohlhaver2024proof} found that Idena's analogous mechanism (one-pool-one-vote, which discounted influence for concentrated account pools) was decisive in enabling the protocol to pivot away from captured governance. Our participation weighting serves a similar function: it makes sustained, genuine engagement a prerequisite for governance influence.
 
@@ -159,16 +159,16 @@ which yields an approval threshold as a fraction of turnout:
 
 At full turnout ($T = E$), the threshold is exactly $50\%$; a simple majority suffices. As turnout decreases, $\theta$ increases toward $100\%$, requiring near-unanimity among the few who vote. This encodes a reasonable democratic principle: decisions affecting the entire community should require broad consensus when most members are absent, but a simple majority suffices when everyone participates.
 
-Additionally, a \emph{MinTurnout} floor (expressed in per mille of the electorate) prevents proposals from passing when turnout is negligibly small, regardless of unanimity among voters.
+Additionally, a \emph{MinTurnout} floor of 5\% of the electorate prevents proposals from passing when turnout is negligibly small, regardless of unanimity among voters.
 
-Figure~\ref{fig:aqb-design} illustrates the AQB threshold curve with a minimum turnout of 5\%. The shaded region above the curve represents passing conditions.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.7\textwidth]{figures/democracy-aqb.pdf}
-\caption{Adaptive quorum biasing: approval threshold as a function of turnout. The blue trace shows a possible trajectory where a proposal fluctuates between passing and failing before eventual confirmation (blue dot). A 5\% minimum turnout floor is applied.}
-\label{fig:aqb-design}
-\end{figure}
+%Figure~\ref{fig:aqb-design} illustrates the AQB threshold curve with a minimum turnout of 5\%. The shaded region above the curve represents passing conditions.
+%
+%\begin{figure}[t]
+%\centering
+%\includegraphics[width=0.7\textwidth]{figures/democracy-aqb.pdf}
+%\caption{Adaptive quorum biasing: approval threshold as a function of turnout. The blue trace shows a possible trajectory where a proposal fluctuates between passing and failing before eventual confirmation (blue dot). A 5\% minimum turnout floor is applied.}
+%\label{fig:aqb-design}
+%\end{figure}
 
 A proposal that meets the AQB threshold enters a \emph{Confirming} state. It must remain continuously passing for a confirmation period before transitioning to \emph{Approved} and entering the enactment queue. If the threshold is no longer met (e.g., due to new nay votes), the proposal returns to \emph{Ongoing}. If a proposal is not approved within its lifetime, it is \emph{Rejected}. Figure~\ref{fig:state-machine} shows the complete proposal state machine.
 
@@ -238,8 +238,11 @@ Community~A in Europe served as the earliest testbed, reaching 155 reputables at
 
 Over the observation period (December 2024 to March 2026), the governance system processed 72 proposals: 31 swap option grants, 23 native treasury spends, 12 petitions, 3 updates to the ceremony reward (``nominal income''), 2 adjustments to the token decay rate (``demurrage'')~\cite{brenzikofer2019encointer}, and 1 location addition. Of these, 63 were approved and enacted, 6 were rejected (all due to expiration with zero votes), 2 were superseded by competing proposals, and 1 remains ongoing.
 
+While privacy enhancements are in development, the current state of our platform only provides user pseudonymity, not anonymity. For our analyses, we will assume people haven't changed their pseudonym since they first installed the mobile app and created their account. 
+
 \subsection{Participation Patterns}
 \label{sec:participation}
+
 
 Figure~\ref{fig:ceremony} shows ceremony participation over time for each community. Community~C demonstrates sustained participation with an average of 32.7 participants per ceremony across 88 cycles. Community~D shows rapid growth since launch, averaging 21.1 participants across 36 ceremonies.
 
@@ -251,13 +254,13 @@ Figure~\ref{fig:ceremony} shows ceremony participation over time for each commun
 \end{figure}
 
 \paragraph{Voting Power Distribution.}
-Figure~\ref{fig:voting-power} analyzes voting power distributions, computed per-proposal against each proposal's specific electorate and averaged across all 72 proposals. Voting power ranges from 1 to $R-1=4$, with a mean of 2.29 and standard deviation of 0.80 among voters. Participation rates scale monotonically with power: 8\% at power~1, 20\% at power~2, 28\% at power~3, and 32\% at power~4. This indicates that sustained ceremony attendance correlates with deeper engagement in governance. The moderate power differentiation (hard cap of 4, empirical standard deviation of 0.8) contrasts sharply with the orders-of-magnitude inequality typical of token-weighted governance.
+Figure~\ref{fig:voting-power} analyzes voting power distributions, computed per-proposal against each proposal's specific electorate and averaged across all 79 proposals. Voting power ranges from 1 to $R-1-L_p=3$, with a mean of 1.77 and standard deviation of 0.62 among voters. Participation rates scale with power: 14\% at power~1, 29\% at power~2, and 26\% at power~3, indicating that sustained ceremony attendance correlates with deeper engagement in governance. The moderate power differentiation (hard cap of 3, empirical standard deviation of 0.62) contrasts sharply with the orders-of-magnitude inequality typical of token-weighted governance.
 
 Of the 799 unique accounts that have ever participated in ceremonies across all communities, 390 were active since the deployment of governance tools in December 2024. Of these, 125 (32.1\%) have cast at least one governance vote. While this is substantially higher than typical DAO participation rates, it still means that nearly 68\% of active ceremony participants have not engaged in governance.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig-voting-power.pdf}
-\caption{Left: mean number of unique voters per proposal at each voting power level. Right: participation rate (fraction of eligible accounts that voted) by voting power. Both averaged across all 72 proposals.}
+\caption{Left: mean number of unique voters per proposal at each voting power level with Gaussian fit. Right: participation rate (fraction of eligible accounts that voted) by voting power. Both averaged across all 79 proposals with computable electorate.}
 \label{fig:voting-power}
 \end{figure}
 
@@ -273,7 +276,7 @@ Figure~\ref{fig:aqb} visualizes the adaptive quorum biasing mechanism against em
 \label{fig:aqb}
 \end{figure}
 
-Of the 67 proposals that received at least one vote, the mean turnout was 23.7\% of the electorate and the mean approval rate among voters was 96.6\%. All voted-upon proposals achieved approval rates well above the AQB threshold at their respective turnout levels, resulting in enactment. Six rejected proposals all expired with zero turnout; no proposal has been actively voted down with nay votes exceeding the threshold.
+Of the 67 proposals that received at least one vote, the mean turnout was 23.7\% of the electorate and the mean approval rate among voters was 96.6\%. All voted-upon proposals achieved approval rates well above the AQB threshold at their respective turnout levels, resulting in enactment. Six rejected proposals all expired with zero turnout; no proposal has been actively voted down with nay votes exceeding the threshold. Examining the 27 approved swap option proposals more closely, we find that 26.7\% of aye voters had previously transacted with the beneficiary business (i.e., sent community currency to the beneficiary address before casting their vote), suggesting that the majority of approval votes are not driven by direct client relationships but rather by community solidarity or deference to proposal submitters.
 
 This pattern suggests two interpretations. Optimistically, the community achieves strong consensus before bringing proposals to a vote, and the AQB mechanism correctly interprets non-participation as implicit consent. Alternatively and more realistically, the lack of contested proposals may reflect a community too small or too homogeneous for meaningful disagreement to emerge. We consider this a limitation: the AQB mechanism has not yet been stress-tested under adversarial or genuinely contested conditions.
 
