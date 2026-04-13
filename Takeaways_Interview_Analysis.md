@@ -20,8 +20,9 @@
 ### 2. Democratic governance is a question of community maturity
 
 - If still early-stage, too many moving parts (technical issues, general comprehension) for governance to become a priority.
-- PayNuq: not well understood, not appreciated — more pressing issues exist.
+- PayNuq: not well understood, not appreciated — more pressing issues exist. Leadership assumed the governance system was token-weighted or revenue-dependent, as in many other blockchain systems, rather than reputation-based.
 - Nyota: well adapted, members see the gain. Difference of ~1.5 years of experience.
+- Data suggests a correlation: more revenue leads to more governance participation.
 - Main business issue in PayNuq is off-boarding (currency conversion). In Nyota this is solved, freeing capacity for governance.
 - Could also be a budget question: Nyota leadership has a higher budget with likely similar costs of living.
 
