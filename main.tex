@@ -88,7 +88,7 @@ The uniqueness foundation of our governance architecture is a decentralized proo
 \paragraph{Ceremony Mechanism.}
 Participants register for recurring ceremonies held at fixed intervals (currently every 10 days). At the designated time, registrants are randomly assigned to meetup locations where groups of 3--15 participants gather simultaneously. During the meetup, each participant performs pairwise cryptographic attestations with all other attendees, creating a mutual proof of physical co-presence. The assignment algorithm minimizes repeat encounters across ceremonies and limits newcomers to at most one quarter of each group, preventing rapid infiltration.
 
-The simultaneity constraint is critical: all ceremonies worldwide occur at the same moment (local solar noon), making it physically impossible for a single person to attend multiple meetups. This provides Sybil resistance without requiring biometric data or centralized identity verification.
+The simultaneity constraint is critical: all ceremonies worldwide occur at the same moment (local solar noon), making it physically impossible for a single person to attend multiple meetups (we exclude polar regions and the international date line). This provides Sybil resistance without requiring biometric data or centralized identity verification.
 
 \paragraph{Sybil Resistance.}
 Hoffmann~\cite{hoffmann2021security} shows that creating a Sybil identity requires controlling $(g - 2)$ out of $g$ reputables in a meetup group. At typical group sizes of 12, this means 10 of 12 participants, making success negligible below 50\% adversarial control. The analysis identifies a \emph{friction threshold} of approximately 4.5\%: if minion recruitment costs exceed 4.5\% of the ceremony reward, no Sybil strategy is profitable. With rewards of approximately \$2 and the logistical costs of physical attendance, effective friction is well above this threshold. The puppeteering risks documented by Ohlhaver et al.~\cite{ohlhaver2024proof} for Idena are structurally mitigated by the physical co-presence requirement, which raises coordination costs and social detection risk.
@@ -170,7 +170,7 @@ Additionally, a \emph{MinTurnout} floor of 5\% of the electorate prevents propos
 %\label{fig:aqb-design}
 %\end{figure}
 
-A proposal that meets the AQB threshold enters a \emph{Confirming} state. It must remain continuously passing for a confirmation period before transitioning to \emph{Approved} and entering the enactment queue. If the threshold is no longer met (e.g., due to new nay votes), the proposal returns to \emph{Ongoing}. If a proposal is not approved within its lifetime, it is \emph{Rejected}. Figure~\ref{fig:state-machine} shows the complete proposal state machine.
+A proposal that meets the AQB threshold enters a \emph{Confirming} state. It must remain continuously passing for a confirmation period before transitioning to \emph{Approved} and entering the enactment queue. If the threshold is no longer met (i.e. due to new nay votes), the proposal returns to \emph{Ongoing}. If a proposal is not approved within its lifetime, it is \emph{Rejected}. Figure~\ref{fig:state-machine} shows the complete proposal state machine.
 
 \begin{figure}[t]
 \centering
