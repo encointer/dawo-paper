@@ -99,11 +99,22 @@ def main():
     t_frac = np.linspace(0.001, 1.0, 200)
     threshold = 1.0 / (1.0 + np.sqrt(t_frac))
     ax.plot(t_frac * 100, threshold * 100, 'k-', linewidth=1.5, label='AQB threshold')
-    ax.fill_between(t_frac * 100, threshold * 100, 100, alpha=0.1, color='green')
-    ax.fill_between(t_frac * 100, 0, threshold * 100, alpha=0.1, color='red')
 
-    # MinTurnout vertical line at 5%
+    # MinTurnout threshold
     min_turnout_pct = MIN_TURNOUT_PERMILLE / 10
+    min_turnout_frac = min_turnout_pct / 100
+
+    # Green (passing) region: above the curve AND right of MinTurnout
+    t_right = t_frac[t_frac >= min_turnout_frac]
+    thresh_right = 1.0 / (1.0 + np.sqrt(t_right))
+    ax.fill_between(t_right * 100, thresh_right * 100, 100, alpha=0.1, color='green')
+
+    # Red (failing) region: below the curve everywhere, plus everything left of MinTurnout
+    ax.fill_between(t_frac * 100, 0, threshold * 100, alpha=0.1, color='red')
+    t_left = t_frac[t_frac < min_turnout_frac]
+    thresh_left = 1.0 / (1.0 + np.sqrt(t_left))
+    ax.fill_between(t_left * 100, thresh_left * 100, 100, alpha=0.1, color='red')
+
     ax.axvline(x=min_turnout_pct, color='black', linestyle=':', linewidth=1.0,
                label=f'MinTurnout ({min_turnout_pct:.0f}%)')
 
