@@ -140,7 +140,7 @@ def main():
     ax.set_ylabel('Approval threshold / actual (%)')
     ax.set_xlim(-1, 50)
     ax.set_ylim(45, 101)
-    ax.legend(loc='right outside', fontsize=6)
+    ax.legend(loc='center right', fontsize=6)
     ax.grid(True, linestyle=':', linewidth=0.5, alpha=0.7)
 
     savefig(fig, 'fig-aqb-curve.pdf')
