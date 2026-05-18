@@ -14,6 +14,10 @@ import os
 # KSM prices fetched from CoinGecko (daily close, USD)
 PRICES_FILE = os.path.join(os.path.dirname(__file__), 'ksm_prices.json')
 
+# Paper data freeze date (inclusive end-of-day UTC). Matches generate_stats.py.
+CUTOFF_TS_MS = int(datetime(2026, 4, 14, 23, 59, 59,
+                            tzinfo=timezone.utc).timestamp() * 1000)
+
 
 def get_ksm_price(date_str, prices):
     """Get KSM price for date, or closest available."""
@@ -41,7 +45,8 @@ def main():
 
     # SpendNative events
     spend_native = list(pindex.events.find({
-        'section': 'encointerTreasuries', 'method': 'SpentNative'
+        'section': 'encointerTreasuries', 'method': 'SpentNative',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }).sort('timestamp', 1))
 
     total_native_usd = 0
@@ -61,12 +66,14 @@ def main():
     exercises = list(pindex.extrinsics.find({
         'section': 'encointerTreasuries',
         'method': {'$in': ['swapAsset', 'swapNative']},
-        'success': True
+        'success': True,
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }))
     exercise_blocks = set(e['blockNumber'] for e in exercises)
 
     spent_asset = list(pindex.events.find({
-        'section': 'encointerTreasuries', 'method': 'SpentAsset'
+        'section': 'encointerTreasuries', 'method': 'SpentAsset',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }).sort('timestamp', 1))
 
     total_swap_usd = 0
