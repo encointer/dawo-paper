@@ -1,4 +1,6 @@
 {
+  "cutoff_date": "2026-03-27",
+  "cutoff_cindex": 146,
   "total_proposals": 72,
   "proposals_by_type": {
     "IssueSwapAssetOption": 31,
@@ -9,56 +11,89 @@
     "AddLocation": 1
   },
   "proposals_by_state": {
-    "Approved": 63,
+    "Approved": 58,
     "Rejected": 6,
+    "Confirming": 5,
     "SupersededBy": 2,
     "Ongoing": 1
   },
-  "total_votes_placed": 687,
-  "total_votes_failed": 263,
-  "aye_votes": 678,
+  "total_votes_placed": 666,
+  "total_votes_failed": 228,
+  "aye_votes": 657,
   "nay_votes": 9,
   "communities": [
     {
       "name": "Leu Z\u00fcrich",
       "cid": "u0qj944rhWE",
-      "ceremonies": 114,
-      "latest_participants": 5,
-      "peak_participants": 65
+      "paper_label": "Community A",
+      "ceremonies": 116,
+      "latest_participants": 3,
+      "peak_participants": 65,
+      "peak_reputables": 155,
+      "latest_reputables": 5
     },
     {
       "name": "Green Bay Dollar",
       "cid": "dpcmj33LUs9",
+      "paper_label": "Community B",
       "ceremonies": 38,
       "latest_participants": 4,
-      "peak_participants": 6
+      "peak_participants": 6,
+      "peak_reputables": 6,
+      "latest_reputables": 4
     },
     {
       "name": "Nyota",
       "cid": "kygch5kVGq7",
-      "ceremonies": 88,
-      "latest_participants": 36,
-      "peak_participants": 72
+      "paper_label": "Community C",
+      "ceremonies": 90,
+      "latest_participants": 42,
+      "peak_participants": 72,
+      "peak_reputables": 129,
+      "latest_reputables": 69
     },
     {
       "name": "Paynuq",
       "cid": "s1vrqQL2SD",
-      "ceremonies": 36,
-      "latest_participants": 28,
-      "peak_participants": 47
+      "paper_label": "Community D",
+      "ceremonies": 37,
+      "latest_participants": 19,
+      "peak_participants": 47,
+      "peak_reputables": 65,
+      "latest_reputables": 47
     }
   ],
   "ceremony_Community B_total_ceremonies": 38,
   "ceremony_Community B_mean_participants": 3.5,
-  "ceremony_Community D_total_ceremonies": 36,
-  "ceremony_Community D_mean_participants": 21.3,
-  "ceremony_Community C_total_ceremonies": 88,
-  "ceremony_Community C_mean_participants": 32.7,
-  "ceremony_Community A_total_ceremonies": 114,
-  "ceremony_Community A_mean_participants": 18.3,
+  "ceremony_Community D_total_ceremonies": 37,
+  "ceremony_Community D_mean_participants": 21.2,
+  "ceremony_Community C_total_ceremonies": 90,
+  "ceremony_Community C_mean_participants": 32.9,
+  "ceremony_Community A_total_ceremonies": 116,
+  "ceremony_Community A_mean_participants": 18.0,
   "governance_start": "2024-12-02",
   "governance_end": "2026-03-27",
   "swap_options_granted": 22,
   "swap_options_exercised": 17,
-  "treasury_native_spends": 22
+  "treasury_native_spends": 22,
+  "ceremony_attendees_ever": 799,
+  "ceremony_attendees_since_gov_start": 389,
+  "distinct_voters": 124,
+  "voter_share_of_active_pct": 31.9,
+  "distinct_submitters": 23,
+  "top_2_submitter_share_pct": 41.7,
+  "n_proposals_with_electorate": 72,
+  "n_proposals_with_votes": 67,
+  "mean_approval_rate_among_voters_pct": 96.4,
+  "mean_turnout_pct": 24.4,
+  "voting_power_mean_among_voters": 1.74,
+  "voting_power_std_among_voters": 0.63,
+  "participation_rate_by_power_pct": {
+    "1": 14.1,
+    "2": 28.2,
+    "3": 26.0
+  },
+  "unique_swap_beneficiaries": 16,
+  "beneficiaries_with_exercise": 13,
+  "beneficiary_exercise_share_pct": 81.2
 }
