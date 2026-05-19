@@ -222,7 +222,8 @@ We hypothesize that a community treasury need not maintain full backing for comm
 
 \subsection{Data and Methods}
 \label{sec:methods}
-On-chain data is drawn from a community accounting API indexing governance events, ceremony rewards, and treasury transactions on \projchain. We freeze the dataset at \emph{2026-04-14} (ceremony index 148 inclusive). Every empirical number below is produced by a single script (\texttt{generate\_stats.py}) that filters all queries to this cutoff and writes a \texttt{stats.json} consumed by the figure scripts; each figure has a one-to-one script counterpart in the paper repository,\footnote{\url{https://github.com/encointer/dawo-paper}} so the pipeline from chain to artefact is auditable end-to-end. Definitions follow the on-chain pallet: in particular, ``reputables'' counts unique accounts with at least one rewarded attendance in the inclusive window $[c - R, c]$, matching the accounting backend.
+On-chain data is drawn from a community accounting API indexing governance events, ceremony rewards, and treasury transactions on \projchain. We freeze the dataset at \emph{2026-04-14} (ceremony index 148 inclusive).
+Every empirical number and all figures can be reproduced\footnote{\url{https://github.com/encointer/dawo-paper}} so the pipeline from chain to artefact is auditable end-to-end.
 
 The platform currently provides pseudonymity but not anonymity. For analyses that count unique humans (proposal submitters, distinct voters, distinct ceremony attendees), we assume participants have not rotated keys or recreated wallets since first registering; we treat this as defensible but not validated.
 
@@ -298,13 +299,8 @@ These outcomes are best read as evidence from a low-conflict, early-stage govern
 \subsection{Knowhow Asymmetry and Agenda-Setting}
 \label{sec:knowhow}
 
-Beyond the on-chain mechanism, the most striking pattern in our deployments concerns who proposes and who votes. We treat this not as a secondary observation but as a first-order constraint on de facto democratic legitimacy.
-
 \paragraph{Submission concentration and informal influence.}
 Of 79 proposals, only 25 distinct accounts submitted any proposal at all, and the top two submitters together account for 42\% of submissions; by contrast, 127 unique accounts have cast votes, a substantially broader base but still under a third of active ceremony participants. Proposal submission is therefore concentrated in a small subset of community leaders who also act as governance educators. This asymmetry of know-how creates an informal influence channel the protocol does not model: members with less technical understanding tend to follow the opinion of those who explain the system. In some cases, participants hand over their phones so that a single person can submit votes on their behalf. Although this does not violate one-person-one-vote at the protocol level (each participant remains custodian of their wallet), it erodes voter \emph{agency} and structurally resembles the puppeteering dynamic Ohlhaver et al.~\cite{ohlhaver2024proof} identified as the central failure mode of Idena's governance. We observed the same pattern in pilot Leu Z\"urich in Switzerland: even when devices were not handed over, votes tracked the argumentation of the presumably \emph{knowledgeable} community leadership.
-
-\paragraph{Interaction with AQB.}
-Knowhow asymmetry compounds the AQB property discussed in Section~\ref{sec:quorum}: when proposal submission is concentrated and many participants abstain, AQB's treatment of non-participation as implicit consent transfers effective decision power to agenda-setters. The same property that prevents minority capture at low turnout can, in our setting, reinforce concentration of influence among the few who both understand and propose. Neither participation weighting nor AQB resolves this; both operate on the assumption that voters have independently formed preferences, which is not robustly the case here.
 
 The gap between the protocol's democratic ideals and the social reality of facilitated participation is a limitation that cannot be resolved through mechanism design alone; it requires investment in governance literacy and accessible deliberation tools, neither of which is in scope for the chain layer. As community currencies grow in economic relevance, the cost of uninformed voting rises, which may drive greater engagement but also heighten capture risk through the same channel.
 
@@ -371,9 +367,14 @@ However, the PoP mechanism itself is inherently local: it relies on geographical
 \label{sec:conclusion}
 %=====================================================================
 
-We presented a field-deployed governance architecture for democratic treasury management in DAOs without plutocratic token-weighted voting. By combining ceremony-based PoP with bounded participation weighting (capped at $3\times$) and adaptive quorum biasing, the system approximates one-person-one-vote governance while remaining agile under variable turnout. Applied to treasury governance in community currencies, the architecture allows communities to democratically allocate native tokens for community leadership and manage stablecoin-backed swap options with per-beneficiary caps and exercise fees. Empirical observations from deployments in two small African communities describe a low-conflict, early-stage governance environment: sustained participation, near-unanimous approval, no contested votes, and proposal submission concentrated in a small number of community leaders. Knowhow asymmetry, rather than the on-chain mechanism, is the binding constraint on de facto equal influence in this setting.
+We presented a field-deployed governance architecture for democratic treasury management in DAOs without plutocratic token-weighted voting.
+By combining ceremony-based PoP with bounded participation weighting (capped at $3\times$), the system approximates one-person-one-vote governance.
+Applied to treasury governance in community currencies, the architecture allows communities to democratically allocate native tokens for community leadership and manage stablecoin-backed swap options with per-beneficiary caps and exercise fees.
+Empirical observations from deployments in two small African communities describe a low-conflict, early-stage governance environment: sustained participation, near-unanimous approval, no contested votes, and proposal submission concentrated in a small number of community leaders.
+Knowhow asymmetry, rather than the on-chain mechanism, is the binding constraint on de facto equal influence in this setting.
 
-Future work should test the architecture under conditions our deployments do not produce: contested proposals as communities grow, adversarial evaluation of PoP under non-cooperative conditions, formal modelling of treasury sustainability, and privacy-preserving voting through ring-VRF-based anonymous credentials~\cite{burdges2023ringvrf}. Larger and more contested deployments are needed before the architecture's democratic properties can be assessed as the economic value of community currencies increases.
+Future work should test the architecture under conditions our deployments do not produce: contested proposals as communities grow, adversarial evaluation of PoP under non-cooperative conditions, formal modelling of treasury sustainability, and privacy-preserving voting through ring-VRF-based anonymous credentials~\cite{burdges2023ringvrf}.
+Larger and more contested deployments are needed before the architecture's democratic properties can be assessed as the economic value of community currencies increases.
 
 %=====================================================================
 \section*{Acknowledgments}
