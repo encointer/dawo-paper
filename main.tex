@@ -91,10 +91,10 @@ The uniqueness foundation of our governance architecture is a decentralized proo
 \paragraph{Ceremony Mechanism.}
 Participants register for recurring ceremonies held at fixed intervals (currently every 10 days). At the designated time, registrants are randomly assigned to meetup locations where groups of 3--15 participants gather simultaneously. During the meetup, each participant performs pairwise cryptographic attestations with all other attendees, creating a mutual proof of physical co-presence. The assignment algorithm minimizes repeat encounters across ceremonies and limits newcomers to at most one quarter of each group, preventing rapid infiltration.
 
-The simultaneity constraint is critical: all ceremonies worldwide occur at the same moment (local solar noon), making it physically impossible for a single person to attend multiple meetups (we exclude polar regions and the international date line). This provides Sybil resistance without requiring biometric data or centralized identity verification.
+The simultaneity constraint is critical: all ceremonies worldwide occur at the same moment (local solar noon), making it physically impossible for a single person to attend multiple meetups (we exclude polar regions and the international date line). This provides Sybil resistance without requiring biometric data or centralized identity verification. We call an account \emph{reputable} if it has at least one rewarded ceremony attendance within the most recent $R = 5$ cycles; reputation is non-transferable and decays automatically when a participant stops attending.
 
 \paragraph{Sybil Resistance.}
-Hoffmann~\cite{hoffmann2021security} shows that creating a Sybil identity requires controlling a majority of the attendees assigned to a single meetup. However, maintaining Sybil identities across ceremonies requires the adversary to control over 50\% of the entire network's reputable (i.e. recently attested) population, and the analysis identifies a \emph{friction threshold} of approximately 4.5\%: if minion recruitment costs exceed this fraction of the ceremony reward, no Sybil strategy is profitable within two years. Moreover, Sybil attacks are observable by honest participants in affected meetups, and sustained attacks erode community trust in the currency, destroying the value of any rewards gained. The puppeteering risks documented by Ohlhaver et al.~\cite{ohlhaver2024proof} for Idena are further mitigated by the physical co-presence requirement, which raises coordination costs and social detection risk.
+Hoffmann~\cite{hoffmann2021security} shows that creating a Sybil identity requires controlling a majority of the attendees assigned to a single meetup. However, maintaining Sybil identities across ceremonies requires the adversary to control over 50\% of the entire network's reputable population, and the analysis identifies a \emph{friction threshold} of approximately 4.5\%: if minion recruitment costs exceed this fraction of the ceremony reward, no Sybil strategy is profitable within two years. Moreover, Sybil attacks are observable by honest participants in affected meetups, and sustained attacks erode community trust in the currency, destroying the value of any rewards gained. The puppeteering risks documented by Ohlhaver et al.~\cite{ohlhaver2024proof} for Idena are further mitigated by the physical co-presence requirement, which raises coordination costs and social detection risk.
 
 %=====================================================================
 \section{Democratic Governance Protocol}
@@ -115,7 +115,7 @@ Proposals move between \emph{Ongoing}, \emph{Confirming}, \emph{Approved}, \emph
 \subsection{Participation-Weighted Voting Power}
 \label{sec:voting-power}
 
-A strict one-person-one-vote weighting is only possible with 100\% confidence in the PoP mechanism, which is not the case in our protocol. Rather than assigning equal voting power to all eligible participants, the protocol weights votes by ceremony participation history. A voter's \emph{voting power} equals their reputation count within the eligible window for that proposal, i.e., the number of ceremonies successfully attended in recent cycles. We will later analyze how well this approximates one-person-one-vote in reality.
+A strict one-person-one-vote weighting is only possible with 100\% confidence in the PoP mechanism, which is not the case in our protocol. Rather than assigning equal voting power to all eligible participants, the protocol weights votes by ceremony participation history. A voter's \emph{voting power} equals their reputation count within the eligible window for that proposal, i.e., the number of ceremonies successfully attended in recent cycles. Section~\ref{sec:participation} examines how closely this approximates one-person-one-vote in practice.
 
 Formally, for a proposal submitted at ceremony index $c_s$, the eligible ceremony indices are:
 \begin{equation}
@@ -128,8 +128,9 @@ The upper bound of the eligible window ($c_s - 2$) excludes the most recent cere
 
 The total electorate $E$ is the sum of reputation counts across all eligible ceremonies for the relevant community (or globally, for global proposals):
 \begin{equation}
-E = \sum_{c \in \mathcal{C}} \text{reputationCount}(c)
+E = \sum_{c \in \mathcal{C}} \text{reputationCount}(c),
 \end{equation}
+where $\text{reputationCount}(c)$ is the number of accounts that received a reward at ceremony $c$.
 
 This design rewards sustained participation: a voter attending all eligible ceremonies has 3$\times$ the influence of a voter attending only once. The cap at $3\times$ bounds inequality, in contrast to token-weighted voting where power differences can span orders of magnitude. Inactive participants lose voting power automatically as their reputations expire, keeping the electorate current.
 
@@ -239,7 +240,7 @@ Figure~\ref{fig:aqb} visualizes the adaptive quorum biasing mechanism against em
 
 Of the 103 proposals that received at least one vote, the mean turnout was 25.1\% of the electorate (weighted by voting power) and the mean approval rate among voters was 97.6\%. Of the seven rejected proposals, five expired with zero turnout and two received minimal voting (one to three votes total) without clearing the AQB threshold; no proposal in the dataset has been actively voted down with nay votes exceeding the threshold. Examining the 60 swap option proposals that had reached the approval track (Approved or Confirming) by the cutoff more closely, we find that 28.7\% of aye voters had previously transacted with the beneficiary business (i.e., sent community currency to the beneficiary address before casting their vote), suggesting that the majority of approval votes are not driven by direct client relationships but rather by community solidarity or deference to proposal submitters.
 
-These outcomes are best read as evidence from a low-conflict, early-stage governance environment rather than as validation of the mechanism under stress. The combination of near-unanimous approval, expiry-only rejections, and small homogeneous electorates is consistent with cooperative coordination among engaged peers; it does not, however, demonstrate that AQB performs well when proposals are genuinely contested. We consider the absence of contested votes a limitation, not a result: the mechanism has not been tested against active opposition, strategic abstention, or adversarial agenda-setting, and our deployments are unlikely to generate such conditions at current scale and stakes.
+The combination of near-unanimous approval, expiry-only rejections, and small homogeneous electorates is consistent with cooperative coordination among engaged peers; it does not, however, demonstrate that AQB performs well when proposals are genuinely contested. We consider the absence of contested votes a limitation, not a result: the mechanism has not been tested against active opposition, strategic abstention, or adversarial agenda-setting, and our deployments are unlikely to generate such conditions at current scale and stakes.
 
 \subsection{Knowhow Asymmetry and Agenda-Setting}
 \label{sec:knowhow}
@@ -315,7 +316,7 @@ However, the PoP mechanism itself is inherently local: it relies on geographical
 We presented a field-deployed governance architecture for democratic treasury management in DAOs without plutocratic token-weighted voting.
 By combining ceremony-based PoP with bounded participation weighting (capped at $3\times$), the system approximates one-person-one-vote governance.
 Applied to treasury governance in community currencies, the architecture allows communities to democratically allocate native tokens for community leadership and manage stablecoin-backed swap options with per-beneficiary caps and exercise fees.
-Empirical observations from deployments in two small African communities describe a low-conflict, early-stage governance environment: sustained participation, near-unanimous approval, no contested votes, and proposal submission concentrated in a small number of community leaders.
+Empirical observations from deployments in two small African communities describe a low-conflict, early-stage governance environment: sustained participation, near-unanimous approval, and proposal submission concentrated in a small number of community leaders.
 Knowhow asymmetry, rather than the on-chain mechanism, is the binding constraint on de facto equal influence in this setting.
 
 Future work should test the architecture under conditions our deployments do not produce: contested proposals as communities grow, adversarial evaluation of PoP under non-cooperative conditions, formal modelling of treasury sustainability, and privacy-preserving voting through ring-VRF-based anonymous credentials~\cite{burdges2023ringvrf}.
