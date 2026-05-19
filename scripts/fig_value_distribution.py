@@ -112,18 +112,18 @@ def main():
     sizes = []
     colors_list = []
     color_map = {
-        'Community A': '#1f77b4', 'Community C': '#ff7f0e',
-        'Community D': '#d62728', 'Community B': '#2ca02c'
+        'Leu Zürich': '#1f77b4', 'Nyota': '#ff7f0e',
+        'PayNuq': '#d62728', 'Green Bay Dollar': '#2ca02c'
     }
 
-    for comm in ['Community C', 'Community D', 'Community A']:
+    for comm in ['Nyota', 'PayNuq', 'Leu Zürich']:
         val = native_by_community.get(comm, 0)
         if val > 0:
             labels.append(f'SpendNative\n{comm}')
             sizes.append(val)
             colors_list.append(color_map.get(comm, 'gray'))
 
-    for comm in ['Community C', 'Community D', 'Community A']:
+    for comm in ['Nyota', 'PayNuq', 'Leu Zürich']:
         val = swap_by_community.get(comm, 0)
         if val > 0:
             labels.append(f'SwapAsset\n{comm}')
@@ -135,21 +135,21 @@ def main():
     # Use hatching instead for swap categories
     # Simpler approach: just use distinct colors
     swap_colors = {
-        'Community A': '#aec7e8', 'Community C': '#ffbb78',
-        'Community D': '#ff9896'
+        'Leu Zürich': '#aec7e8', 'Nyota': '#ffbb78',
+        'PayNuq': '#ff9896'
     }
     colors_list = []
     labels = []
     sizes = []
 
-    for comm in ['Community C', 'Community D', 'Community A']:
+    for comm in ['Nyota', 'PayNuq', 'Leu Zürich']:
         val = native_by_community.get(comm, 0)
         if val > 0:
             labels.append(f'SpendNative ({comm})')
             sizes.append(val)
             colors_list.append(color_map.get(comm, 'gray'))
 
-    for comm in ['Community C', 'Community D', 'Community A']:
+    for comm in ['Nyota', 'PayNuq', 'Leu Zürich']:
         val = swap_by_community.get(comm, 0)
         if val > 0:
             labels.append(f'SwapAsset ({comm})')

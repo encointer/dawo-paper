@@ -23,7 +23,7 @@
     {
       "name": "Leu Z\u00fcrich",
       "cid": "u0qj944rhWE",
-      "paper_label": "Community A",
+      "paper_label": "Leu Z\u00fcrich",
       "ceremonies": 118,
       "latest_participants": 3,
       "peak_participants": 65,
@@ -33,7 +33,7 @@
     {
       "name": "Green Bay Dollar",
       "cid": "dpcmj33LUs9",
-      "paper_label": "Community B",
+      "paper_label": "Green Bay Dollar",
       "ceremonies": 38,
       "latest_participants": 4,
       "peak_participants": 6,
@@ -43,7 +43,7 @@
     {
       "name": "Nyota",
       "cid": "kygch5kVGq7",
-      "paper_label": "Community C",
+      "paper_label": "Nyota",
       "ceremonies": 92,
       "latest_participants": 43,
       "peak_participants": 72,
@@ -53,7 +53,7 @@
     {
       "name": "Paynuq",
       "cid": "s1vrqQL2SD",
-      "paper_label": "Community D",
+      "paper_label": "PayNuq",
       "ceremonies": 39,
       "latest_participants": 13,
       "peak_participants": 47,
@@ -61,14 +61,14 @@
       "latest_reputables": 42
     }
   ],
-  "ceremony_Community B_total_ceremonies": 38,
-  "ceremony_Community B_mean_participants": 3.5,
-  "ceremony_Community D_total_ceremonies": 39,
-  "ceremony_Community D_mean_participants": 20.8,
-  "ceremony_Community C_total_ceremonies": 92,
-  "ceremony_Community C_mean_participants": 33.0,
-  "ceremony_Community A_total_ceremonies": 118,
-  "ceremony_Community A_mean_participants": 17.8,
+  "ceremony_Green Bay Dollar_total_ceremonies": 38,
+  "ceremony_Green Bay Dollar_mean_participants": 3.5,
+  "ceremony_PayNuq_total_ceremonies": 39,
+  "ceremony_PayNuq_mean_participants": 20.8,
+  "ceremony_Nyota_total_ceremonies": 92,
+  "ceremony_Nyota_mean_participants": 33.0,
+  "ceremony_Leu Z\u00fcrich_total_ceremonies": 118,
+  "ceremony_Leu Z\u00fcrich_mean_participants": 17.8,
   "governance_start": "2024-12-02",
   "governance_end": "2026-04-06",
   "swap_options_granted": 32,

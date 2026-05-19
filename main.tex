@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%% main.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Democratic Treasury Governance Without Plutocracy
-% DAWO26 Full Paper Submission (double-blind)
+% DAWO26 Full Paper Submission
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -16,11 +16,12 @@
 \usepackage{hyperref}
 \usepackage{xspace}
 
-% Anonymization macros for double-blind review
-\newcommand{\projname}{[ProjectName]\xspace}
-\newcommand{\projchain}{[Blockchain]\xspace}
-\newcommand{\locationC}{[City-C]\xspace}
-\newcommand{\locationD}{[City-D]\xspace}
+% Project, blockchain and deployment-location names
+\newcommand{\projname}{Encointer\xspace}
+\newcommand{\projrelaychain}{Kusama\xspace}
+\newcommand{\projchain}{Encointer Network\xspace}
+\newcommand{\locationC}{Dar es Salaam, Tanzania\xspace}
+\newcommand{\locationD}{Zaria, Nigeria\xspace}
 
 \begin{document}
 \mainmatter
@@ -30,9 +31,13 @@ Proof-of-Personhood Voting for DAO Resource Allocation}
 
 \titlerunning{Democratic Treasury Governance Without Plutocracy}
 
-% Double-blind: author info omitted for review
-\author{}
-\institute{}
+\author{Alain Brenzikofer\inst{1} \and Malik El Bay\inst{2}}
+\authorrunning{A. Brenzikofer and M. El Bay}
+\institute{Encointer Association, Zurich, Switzerland \\
+\email{alain@encointer.org}
+\and
+Dezentrum, Zurich, Switzerland \\
+\email{malik.elbay@dezentrum.ch}}
 
 \maketitle
 
@@ -217,7 +222,7 @@ We hypothesize that a community treasury need not maintain full backing for comm
 
 \subsection{Data and Methods}
 \label{sec:methods}
-On-chain data is drawn from a community accounting API indexing governance events, ceremony rewards, and treasury transactions on \projchain. We freeze the dataset at \emph{2026-04-14} (ceremony index 148 inclusive). Every empirical number below is produced by a single script (\texttt{generate\_stats.py}) that filters all queries to this cutoff and writes a \texttt{stats.json} consumed by the figure scripts; each figure has a one-to-one script counterpart in the paper repository,\footnote{Source repository URL omitted for double-blind review; the camera-ready version cites \texttt{[paper-repo]}.} so the pipeline from chain to artefact is auditable end-to-end. Definitions follow the on-chain pallet: in particular, ``reputables'' counts unique accounts with at least one rewarded attendance in the inclusive window $[c - R, c]$, matching the accounting backend.
+On-chain data is drawn from a community accounting API indexing governance events, ceremony rewards, and treasury transactions on \projchain. We freeze the dataset at \emph{2026-04-14} (ceremony index 148 inclusive). Every empirical number below is produced by a single script (\texttt{generate\_stats.py}) that filters all queries to this cutoff and writes a \texttt{stats.json} consumed by the figure scripts; each figure has a one-to-one script counterpart in the paper repository,\footnote{\url{https://github.com/encointer/dawo-paper}} so the pipeline from chain to artefact is auditable end-to-end. Definitions follow the on-chain pallet: in particular, ``reputables'' counts unique accounts with at least one rewarded attendance in the inclusive window $[c - R, c]$, matching the accounting backend.
 
 The platform currently provides pseudonymity but not anonymity. For analyses that count unique humans (proposal submitters, distinct voters, distinct ceremony attendees), we assume participants have not rotated keys or recreated wallets since first registering; we treat this as defensible but not validated.
 
@@ -237,14 +242,14 @@ The governance architecture has been operational since December 2024 across all 
  & & Peak & Latest & Proposals \\
 Community & Ceremonies & Reputables & Reputables & Submitted \\
 \midrule
-Community A (Europe) & 118 & 155 & 6 & 6 \\
-Community C (East Africa) & 92 & 129 & 65 & 57 \\
-Community D (West Africa) & 39 & 65 & 42 & 16 \\
+Leu Z\"urich (Switzerland) & 118 & 155 & 6 & 6 \\
+Nyota (Tanzania) & 92 & 129 & 65 & 57 \\
+PayNuq (Nigeria) & 39 & 65 & 42 & 16 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Community~A in Europe served as the earliest testbed, reaching 155 reputables at its peak, but has since declined to single-digit participation. The primary deployment is Community~C in East Africa, where approximately 60 entrepreneurs (tailors, food vendors, and cosmetics sellers) participate in regular ceremonies and accept the local community currency for their goods and services. Community~C peaked at 129 reputables and currently maintains 65. Community~D in West Africa has grown rapidly since its launch, reaching 65 reputables at peak and currently maintaining 42.
+Leu Z\"urich in Switzerland served as the earliest testbed, reaching 155 reputables at its peak, but has since declined to single-digit participation. The primary deployment is Nyota in \locationC, where approximately 60 entrepreneurs (tailors, food vendors, and cosmetics sellers) participate in regular ceremonies and accept the local community currency for their goods and services. Nyota peaked at 129 reputables and currently maintains 65. PayNuq in \locationD has grown rapidly since its launch, reaching 65 reputables at peak and currently maintaining 42.
 
 Over the observation period (December 2024 to April 2026), the governance system processed 79 proposals: 36 swap option grants, 25 native treasury spends, 12 petitions, 3 updates to the ceremony reward (``nominal income''), 2 adjustments to the token decay rate (``demurrage'')~\cite{brenzikofer2019encointer}, and 1 location addition. By the cutoff, 70 had been approved and enacted, 7 had been rejected, and 2 had been superseded by competing proposals.
 
@@ -254,7 +259,7 @@ While privacy enhancements are in development, the current state of our platform
 \label{sec:participation}
 
 
-Figure~\ref{fig:ceremony} shows ceremony participation over time for each community. Community~C demonstrates sustained participation with an average of 33.0 participants per ceremony across 92 cycles. Community~D shows rapid growth since launch, averaging 20.8 participants across 39 ceremonies. These figures describe a small, locally cohesive participant base rather than a population large enough to test mechanism behaviour under contestation.
+Figure~\ref{fig:ceremony} shows ceremony participation over time for each community. Nyota demonstrates sustained participation with an average of 33.0 participants per ceremony across 92 cycles. PayNuq shows rapid growth since launch, averaging 20.8 participants across 39 ceremonies. These figures describe a small, locally cohesive participant base rather than a population large enough to test mechanism behaviour under contestation.
 
 \begin{figure}[t]
 \centering
@@ -296,7 +301,7 @@ These outcomes are best read as evidence from a low-conflict, early-stage govern
 Beyond the on-chain mechanism, the most striking pattern in our deployments concerns who proposes and who votes. We treat this not as a secondary observation but as a first-order constraint on de facto democratic legitimacy.
 
 \paragraph{Submission concentration and informal influence.}
-Of 79 proposals, only 25 distinct accounts submitted any proposal at all, and the top two submitters together account for 42\% of submissions; by contrast, 127 unique accounts have cast votes, a substantially broader base but still under a third of active ceremony participants. Proposal submission is therefore concentrated in a small subset of community leaders who also act as governance educators. This asymmetry of know-how creates an informal influence channel the protocol does not model: members with less technical understanding tend to follow the opinion of those who explain the system. In some cases, participants hand over their phones so that a single person can submit votes on their behalf. Although this does not violate one-person-one-vote at the protocol level (each participant remains custodian of their wallet), it erodes voter \emph{agency} and structurally resembles the puppeteering dynamic Ohlhaver et al.~\cite{ohlhaver2024proof} identified as the central failure mode of Idena's governance. We observed the same pattern in pilot Community~A in Europe: even when devices were not handed over, votes tracked the argumentation of the presumably \emph{knowledgeable} community leadership.
+Of 79 proposals, only 25 distinct accounts submitted any proposal at all, and the top two submitters together account for 42\% of submissions; by contrast, 127 unique accounts have cast votes, a substantially broader base but still under a third of active ceremony participants. Proposal submission is therefore concentrated in a small subset of community leaders who also act as governance educators. This asymmetry of know-how creates an informal influence channel the protocol does not model: members with less technical understanding tend to follow the opinion of those who explain the system. In some cases, participants hand over their phones so that a single person can submit votes on their behalf. Although this does not violate one-person-one-vote at the protocol level (each participant remains custodian of their wallet), it erodes voter \emph{agency} and structurally resembles the puppeteering dynamic Ohlhaver et al.~\cite{ohlhaver2024proof} identified as the central failure mode of Idena's governance. We observed the same pattern in pilot Leu Z\"urich in Switzerland: even when devices were not handed over, votes tracked the argumentation of the presumably \emph{knowledgeable} community leadership.
 
 \paragraph{Interaction with AQB.}
 Knowhow asymmetry compounds the AQB property discussed in Section~\ref{sec:quorum}: when proposal submission is concentrated and many participants abstain, AQB's treatment of non-participation as implicit consent transfers effective decision power to agenda-setters. The same property that prevents minority capture at low turnout can, in our setting, reinforce concentration of influence among the few who both understand and propose. Neither participation weighting nor AQB resolves this; both operate on the assumption that voters have independently formed preferences, which is not robustly the case here.
@@ -306,7 +311,7 @@ The gap between the protocol's democratic ideals and the social reality of facil
 \subsection{Treasury Governance Outcomes}
 \label{sec:swap-results}
 
-The treasury governance mechanism has been most actively used in Community~C, where 28 of the 32 enacted swap options were granted. Figure~\ref{fig:treasury} shows the cumulative timeline of all treasury governance proposals.
+The treasury governance mechanism has been most actively used in Nyota, where 28 of the 32 enacted swap options were granted. Figure~\ref{fig:treasury} shows the cumulative timeline of all treasury governance proposals.
 
 \begin{figure}[t]
 \centering
@@ -327,11 +332,11 @@ Table~\ref{tab:value} shows the real USD value distributed through treasury gove
 \toprule
 Type & Community & USD & \% \\
 \midrule
-SpendNative & Community C & 6{,}556 & 62.1 \\
-SpendNative & Community D & 3{,}278 & 31.0 \\
-SwapAsset exercised & Community C & 663 & 6.3 \\
-SwapAsset exercised & Community D & 63 & 0.6 \\
-SwapAsset exercised & Community A & 1 & 0.0 \\
+SpendNative & Nyota & 6{,}556 & 62.1 \\
+SpendNative & PayNuq & 3{,}278 & 31.0 \\
+SwapAsset exercised & Nyota & 663 & 6.3 \\
+SwapAsset exercised & PayNuq & 63 & 0.6 \\
+SwapAsset exercised & Leu Z\"urich & 1 & 0.0 \\
 \midrule
 \textbf{Total} & & \textbf{10{,}561} & \textbf{100} \\
 \bottomrule
@@ -340,7 +345,7 @@ SwapAsset exercised & Community A & 1 & 0.0 \\
 
 The per-beneficiary limit of 10\% of treasury balance and the 2\% exercise fee have not yet been tested over a longer term. Current utilization levels suggest the mechanism is functioning as intended, providing democratic oversight of treasury outflows while enabling businesses to convert excess community currency to stablecoins.
 
-Interviews with Community~C leadership reveal that the introduction of swap options has materially changed the perception of the community currency. Previously, participants spent tokens carelessly (e.g., sending 15 when 10 was owed); now that tokens can be converted to stablecoins, they are treated as a store of value. Emergent financial behavior has appeared: one member loaned 30 community currency tokens and agreed on repayment of 35, implying an informal interest rate. As the community leader summarized: ``Sometimes people don't have cash but they have [community currency]!'' However, the offramp from stablecoins to local cash remains a significant obstacle, particularly for participants without bank accounts or credit cards. In Community~D, business owners report waiting over a month for pending conversions through an agent, and the friction of converting stablecoins to mobile money limits the practical reach of the swap mechanism.
+Interviews with Nyota leadership reveal that the introduction of swap options has materially changed the perception of the community currency. Previously, participants spent tokens carelessly (e.g., sending 15 Nyota when 10 were owed); now that tokens can be converted to stablecoins, they are treated as a store of value. Emergent financial behavior has appeared: one member loaned 30 Nyota and agreed on repayment of 35, implying an informal interest rate. As the community leader summarized: ``Sometimes people don't have cash but they have Nyota!'' However, the offramp from stablecoins to local cash remains a significant obstacle, particularly for participants without bank accounts or credit cards. In PayNuq, business owners report waiting over a month for pending conversions through an agent, and the friction of converting stablecoins to mobile money limits the practical reach of the swap mechanism.
 
 %=====================================================================
 \section{Discussion}
@@ -374,7 +379,7 @@ Future work should test the architecture under conditions our deployments do not
 \section*{Acknowledgments}
 %=====================================================================
 
-[Omitted for double-blind review.]
+We thank the community leaders of Nyota (\locationC) and PayNuq (\locationD) for the interviews informing this work, and the participants of all deployments for sustaining the ceremonies and governance activity reported here. The \projname architecture has been developed with support from the Web3 Foundation and the Kusama Treasury, and runs as a common-good parachain on \projrelaychain.
 
 Portions of this manuscript were drafted with the assistance of large language models, in accordance with the DAWO26 AI usage policy and Springer Declarations for Use of AI. The authors take full responsibility for the content.
 
