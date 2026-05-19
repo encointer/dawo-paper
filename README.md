@@ -1,0 +1,145 @@
+# DAWO26 — Democratic Treasury Governance Without Plutocracy
+
+LaTeX sources, analysis scripts and figure generators for the paper
+*Democratic Treasury Governance Without Plutocracy: Proof-of-Personhood
+Voting for DAO Resource Allocation* (Brenzikofer & El Bay, DAWO26).
+
+The paper reports field-deployment results from the Encointer governance
+deployments on Kusama (communities Nyota, PayNuq, Leu Zürich). All
+empirical numbers, tables, and figures are reproducible end-to-end from
+on-chain data via the scripts in `scripts/`.
+
+## Repository layout
+
+```
+main.tex                   Paper source
+references.bib             Bibliography
+Makefile                   pdflatex/bibtex build target
+styles/                    Springer SVProc class and bibstyles
+figures/                   Generated PDF figures and stats.json
+scripts/                   Data extraction and figure generators
+interviews/                Field interview transcripts and notes
+reference-notes.md         Digested summaries of cited works
+```
+
+## Building the PDF
+
+LaTeX prerequisites: TeX Live (or MacTeX/MiKTeX) with `pdflatex`,
+`bibtex`, and the standard Springer SVProc dependencies (`hyperref`,
+`graphicx`, `amsmath`, `booktabs`, `xspace`, `url`). The
+SVProc class and the bibstyle `splncs03.bst` are bundled in
+`styles/`; no separate Springer install is needed.
+
+```
+make pdf
+```
+
+This runs `pdflatex → bibtex → pdflatex → pdflatex` against `main.tex`
+and writes `main.pdf`. `make clean` removes auxiliary files.
+
+The build uses only the PDFs already in `figures/`; you do not need to
+re-run the analysis scripts to build the paper.
+
+## Reproducing the figures and numbers
+
+The data pipeline reads on-chain events from a public Encointer indexer
+(MongoDB), filters them to a fixed cutoff date, and writes:
+
+- `figures/stats.json` — every inline number reported in §5 of the paper
+- `figures/fig-*.pdf` — every figure included via `\includegraphics{}`
+
+### Prerequisites
+
+Python 3.10+ with:
+
+```
+pip install pymongo matplotlib numpy
+```
+
+Read-only MongoDB access to the Encointer indexer at
+`bezzera.encointer.org:27417`. The connection string is hard-coded in
+`scripts/common.py` (read-only credentials). The connection runs over
+TLS with `tlsAllowInvalidCertificates=true`.
+
+### Setting the data cutoff
+
+The paper freezes its dataset at a specific timestamp so that numbers
+remain reproducible against a database that keeps advancing. Each script
+that touches chain data carries its own `CUTOFF_TS_MS` (and where
+relevant `CUTOFF_CINDEX`) constant; the current value is the date used
+in the paper. To produce a snapshot at a different cutoff, edit the
+constants at the top of each script consistently:
+
+- `scripts/generate_stats.py` — `CUTOFF_DATE`, `CUTOFF_TS_MS`
+- `scripts/analyze_swap_voter_clients.py` — `CUTOFF_DATE`, `CUTOFF_TS_MS`
+- `scripts/fig_value_distribution.py` — `CUTOFF_TS_MS`
+- `scripts/fig_treasury.py` — `CUTOFF_TS_MS`
+- `scripts/fig_aqb_curve.py` — `CUTOFF_TS_MS`
+- `scripts/fig_voting_power.py` — `CUTOFF_TS_MS`, `CUTOFF_CINDEX`
+- `scripts/fig_ceremony_participation.py` — `CUTOFF_CINDEX`
+
+The `CUTOFF_CINDEX` value is the ceremony index corresponding to the
+chosen timestamp; `generate_stats.py` prints it when run.
+
+### Running the pipeline
+
+From the `scripts/` directory:
+
+```
+cd scripts
+
+# 1. Stats: writes figures/stats.json and prints all paper numbers.
+python3 generate_stats.py
+
+# 2. Figures (each writes one PDF into figures/).
+python3 fig_state_machine.py            # Fig 1: proposal state machine (no chain data)
+python3 fig_ceremony_participation.py   # Fig 2: ceremony attendance time series
+python3 fig_voting_power.py             # Fig 3: voting power distribution + participation by power
+python3 fig_aqb_curve.py                # Fig 4: AQB threshold curve with empirical proposals
+python3 fig_treasury.py                 # Fig 5: cumulative treasury event timeline
+python3 fig_value_distribution.py       # Auxiliary: pie chart of USD value distribution
+
+# 3. Sanity checks / supplementary tables.
+python3 analyze_swap_voter_clients.py    # §5.4 prior-transactor share
+python3 stats_submitter_concentration.py # §5.5 submitter concentration
+python3 stats_paper_numbers.py           # Legacy aggregate, kept for cross-checking
+```
+
+After running these, `make pdf` will rebuild the PDF using the
+regenerated figures and the values written into `stats.json`.
+
+### What each script does
+
+| Script                              | Produces                                                                            |
+| ----------------------------------- | ----------------------------------------------------------------------------------- |
+| `generate_stats.py`                 | `figures/stats.json` — all §5 inline numbers, including reputables per community    |
+| `fig_state_machine.py`              | `figures/democracy-proposal-state-machine.pdf` (Fig 1)                              |
+| `fig_ceremony_participation.py`     | `figures/fig-ceremony-participation.pdf` (Fig 2)                                    |
+| `fig_voting_power.py`               | `figures/fig-voting-power.pdf` (Fig 3)                                              |
+| `fig_aqb_curve.py`                  | `figures/fig-aqb-curve.pdf` (Fig 4)                                                 |
+| `fig_treasury.py`                   | `figures/fig-treasury-timeline.pdf` (Fig 5)                                         |
+| `fig_value_distribution.py`         | `figures/fig-value-distribution.pdf` and prints USD values for Table 2              |
+| `analyze_swap_voter_clients.py`     | Prints per-proposal aye-voter / prior-transactor breakdown reported in §5.4         |
+| `stats_submitter_concentration.py`  | Prints proposal-submitter concentration figures reported in §5.5                    |
+
+KSM-to-USD conversion in `fig_value_distribution.py` reads
+`scripts/ksm_prices.json`; this file is committed to keep historical
+prices reproducible.
+
+## Methodology notes
+
+- **Reputables** are computed using the same rolling window as the
+  Encointer accounting backend (`data.js#getCumulativeRewardsData`):
+  the inclusive window `[c - R, c]` with `R = 5`, counting unique
+  rewarded attendees. This is wider than the per-proposal voting
+  window `[c_s - R + 1, c_s - 2]` by one cycle on each side.
+- **Pseudonym stability** is assumed: a participant is identified by
+  their on-chain account and is not assumed to have rotated keys.
+- **Interview methodology** is described in §5.1; transcripts and
+  notes live in `interviews/`.
+
+## License
+
+LaTeX sources and analysis scripts: see top-level repository license.
+The Springer SVProc class files in `styles/` are redistributed under
+Springer's terms; see `readme.txt`.
