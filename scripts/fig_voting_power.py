@@ -12,7 +12,13 @@ Ceremony cs-1 is deliberately excluded by the pallet (saturating_sub(2)).
 """
 from common import *
 from collections import defaultdict, Counter
+from datetime import datetime, timezone
 import numpy as np
+
+# Paper data freeze date. Matches generate_stats.py.
+CUTOFF_TS_MS = int(datetime(2026, 5, 19, 6, 0, 0,
+                            tzinfo=timezone.utc).timestamp() * 1000)
+CUTOFF_CINDEX = 151
 
 
 def main():
@@ -28,7 +34,8 @@ def main():
 
     # 1. Build (cid, cindex) -> set(accounts) from Issued events
     pipeline = [
-        {'$match': {'section': 'encointerBalances', 'method': 'Issued'}},
+        {'$match': {'section': 'encointerBalances', 'method': 'Issued',
+                    'timestamp': {'$lte': CUTOFF_TS_MS}}},
         {'$lookup': {
             'from': 'blocks', 'localField': 'blockNumber',
             'foreignField': 'height', 'as': 'block'
@@ -51,11 +58,14 @@ def main():
         # Match backend: adjust for REGISTERING phase
         if r.get('phase') == 'REGISTERING':
             ci -= 1
+        if ci > CUTOFF_CINDEX:
+            continue
         cid_ci_accts[r['cid']][ci].add(r['account'])
 
     # 2. Get proposals with startCindex and cid
     submitted = list(pindex.events.find({
-        'section': 'encointerDemocracy', 'method': 'ProposalSubmitted'
+        'section': 'encointerDemocracy', 'method': 'ProposalSubmitted',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }))
     proposals = {}
     for s in submitted:
@@ -72,7 +82,8 @@ def main():
 
     # 3. Get voter addresses per proposal via extrinsic matching
     vote_events = list(pindex.events.find({
-        'section': 'encointerDemocracy', 'method': 'VotePlaced'
+        'section': 'encointerDemocracy', 'method': 'VotePlaced',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }))
     ext_ids = [v.get('extrinsicId') for v in vote_events if v.get('extrinsicId')]
     extrinsics = {e['_id']: e for e in pindex.extrinsics.find({'_id': {'$in': ext_ids}})}

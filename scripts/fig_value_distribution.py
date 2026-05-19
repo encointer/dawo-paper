@@ -14,8 +14,8 @@ import os
 # KSM prices fetched from CoinGecko (daily close, USD)
 PRICES_FILE = os.path.join(os.path.dirname(__file__), 'ksm_prices.json')
 
-# Paper data freeze date (inclusive end-of-day UTC). Matches generate_stats.py.
-CUTOFF_TS_MS = int(datetime(2026, 4, 14, 23, 59, 59,
+# Paper data freeze date. Matches generate_stats.py.
+CUTOFF_TS_MS = int(datetime(2026, 5, 19, 6, 0, 0,
                             tzinfo=timezone.utc).timestamp() * 1000)
 
 

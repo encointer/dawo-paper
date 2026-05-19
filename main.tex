@@ -222,7 +222,7 @@ We hypothesize that a community treasury need not maintain full backing for comm
 
 \subsection{Data and Methods}
 \label{sec:methods}
-On-chain data is drawn from a community accounting API indexing governance events, ceremony rewards, and treasury transactions on \projchain. We freeze the dataset at \emph{2026-04-14} (ceremony index 148 inclusive).
+On-chain data is drawn from a community accounting API indexing governance events, ceremony rewards, and treasury transactions on \projchain. We freeze the dataset at \emph{2026-05-19} (ceremony index 151 inclusive).
 Every empirical number and all figures can be reproduced\footnote{\url{https://github.com/encointer/dawo-paper}} so the pipeline from chain to artefact is auditable end-to-end.
 
 The platform currently provides pseudonymity but not anonymity. For analyses that count unique humans (proposal submitters, distinct voters, distinct ceremony attendees), we assume participants have not rotated keys or recreated wallets since first registering; we treat this as defensible but not validated.
@@ -236,23 +236,23 @@ The governance architecture has been operational since December 2024 across all 
 
 \begin{table}[t]
 \centering
-\caption{Community deployment summary at the data cutoff (2026-04-14, ceremony index 148). Reputables are the unique set of accounts with at least one rewarded ceremony attendance in the inclusive window $[c - R, c]$ with $R = 5$.}
+\caption{Community deployment summary at the data cutoff (2026-05-19, ceremony index 151). Reputables are the unique set of accounts with at least one rewarded ceremony attendance in the inclusive window $[c - R, c]$ with $R = 5$.}
 \label{tab:communities}
 \begin{tabular}{lrrrr}
 \toprule
  & & Peak & Latest & Proposals \\
 Community & Ceremonies & Reputables & Reputables & Submitted \\
 \midrule
-Leu Z\"urich (Switzerland) & 118 & 155 & 6 & 6 \\
-Nyota (Tanzania) & 92 & 129 & 65 & 57 \\
-PayNuq (Nigeria) & 39 & 65 & 42 & 16 \\
+Leu Z\"urich (Switzerland) & 119 & 155 & 6 & 6 \\
+Nyota (Tanzania) & 93 & 129 & 61 & 73 \\
+PayNuq (Nigeria) & 40 & 65 & 34 & 29 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Leu Z\"urich in Switzerland served as the earliest testbed, reaching 155 reputables at its peak, but has since declined to single-digit participation. The primary deployment is Nyota in \locationC, where approximately 60 entrepreneurs (tailors, food vendors, and cosmetics sellers) participate in regular ceremonies and accept the local community currency for their goods and services. Nyota peaked at 129 reputables and currently maintains 65. PayNuq in \locationD has grown rapidly since its launch, reaching 65 reputables at peak and currently maintaining 42.
+Leu Z\"urich in Switzerland served as the earliest testbed, reaching 155 reputables at its peak, but has since declined to single-digit participation. The primary deployment is Nyota in \locationC, where approximately 60 entrepreneurs (tailors, food vendors, and cosmetics sellers) participate in regular ceremonies and accept the local community currency for their goods and services. Nyota peaked at 129 reputables and currently maintains 61. PayNuq in \locationD has grown rapidly since its launch, reaching 65 reputables at peak and currently maintaining 34.
 
-Over the observation period (December 2024 to April 2026), the governance system processed 79 proposals: 36 swap option grants, 25 native treasury spends, 12 petitions, 3 updates to the ceremony reward (``nominal income''), 2 adjustments to the token decay rate (``demurrage'')~\cite{brenzikofer2019encointer}, and 1 location addition. By the cutoff, 70 had been approved and enacted, 7 had been rejected, and 2 had been superseded by competing proposals.
+Over the observation period (December 2024 to May 2026), the governance system processed 108 proposals: 64 swap option grants, 26 native treasury spends, 12 petitions, 3 updates to the ceremony reward (``nominal income''), 2 adjustments to the token decay rate (``demurrage'')~\cite{brenzikofer2019encointer}, and 1 location addition. By the cutoff, 91 had been approved and enacted, 8 had passed the AQB threshold and were in the confirmation period (i.e., on track to enact), 7 had been rejected, and 2 had been superseded by competing proposals.
 
 While privacy enhancements are in development, the current state of our platform only provides user pseudonymity, not anonymity. For our analyses, we will assume people haven't changed their pseudonym since they first installed the mobile app and created their account.
 
@@ -260,7 +260,7 @@ While privacy enhancements are in development, the current state of our platform
 \label{sec:participation}
 
 
-Figure~\ref{fig:ceremony} shows ceremony participation over time for each community. Nyota demonstrates sustained participation with an average of 33.0 participants per ceremony across 92 cycles. PayNuq shows rapid growth since launch, averaging 20.8 participants across 39 ceremonies. These figures describe a small, locally cohesive participant base rather than a population large enough to test mechanism behaviour under contestation.
+Figure~\ref{fig:ceremony} shows ceremony participation over time for each community. Nyota demonstrates sustained participation with an average of 33.0 participants per ceremony across 93 cycles. PayNuq shows rapid growth since launch, averaging 20.7 participants across 40 ceremonies. These figures describe a small, locally cohesive participant base rather than a population large enough to test mechanism behaviour under contestation.
 
 \begin{figure}[t]
 \centering
@@ -270,13 +270,13 @@ Figure~\ref{fig:ceremony} shows ceremony participation over time for each commun
 \end{figure}
 
 \paragraph{Voting Power Distribution.}
-Figure~\ref{fig:voting-power} analyzes voting power distributions, computed per-proposal against each proposal's specific electorate and averaged across all 79 proposals. Voting power ranges from 1 to $R-1-L_p=3$, with a mean of 1.77 and standard deviation of 0.62 among voters. Participation rates by power show a non-monotonic but rising pattern: 14\% at power~1, 29\% at power~2, and 26\% at power~3, indicating that sustained ceremony attendance correlates with (though does not strictly determine) deeper engagement in governance. The moderate power differentiation (hard cap of 3, empirical standard deviation of 0.62) describes the \emph{designed} bound on inequality among voters; it contrasts sharply with the orders-of-magnitude inequality typical of token-weighted governance.
+Figure~\ref{fig:voting-power} analyzes voting power distributions, computed per-proposal against each proposal's specific electorate and averaged across all 108 proposals. Voting power ranges from 1 to $R-1-L_p=3$, with a mean of 1.78 and standard deviation of 0.61 among voters. Participation rates by power rise with engagement: 14\% at power~1, 30\% at power~2, and 29\% at power~3, indicating that sustained ceremony attendance correlates with (though does not strictly determine) deeper engagement in governance. The moderate power differentiation (hard cap of 3, empirical standard deviation of 0.61) describes the \emph{designed} bound on inequality among voters; it contrasts sharply with the orders-of-magnitude inequality typical of token-weighted governance.
 
-Of the 804 unique accounts that have ever participated in ceremonies across all communities, 394 were active since the deployment of governance tools in December 2024. Of these, 127 (32.2\%) have cast at least one governance vote. While this is substantially higher than typical DAO participation rates, it still means that roughly two thirds of active ceremony participants have not engaged in governance.
+Of the 808 unique accounts that have ever participated in ceremonies across all communities, 398 were active since the deployment of governance tools in December 2024. Of these, 129 (32.4\%) have cast at least one governance vote. While this is substantially higher than typical DAO participation rates, it still means that roughly two thirds of active ceremony participants have not engaged in governance.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig-voting-power.pdf}
-\caption{Left: mean number of unique voters per proposal at each voting power level with Gaussian fit. Right: participation rate (fraction of eligible accounts that voted) by voting power. Both averaged across all 79 proposals with computable electorate.}
+\caption{Left: mean number of unique voters per proposal at each voting power level with Gaussian fit. Right: participation rate (fraction of eligible accounts that voted) by voting power. Both averaged across all 108 proposals with computable electorate.}
 \label{fig:voting-power}
 \end{figure}
 
@@ -292,7 +292,7 @@ Figure~\ref{fig:aqb} visualizes the adaptive quorum biasing mechanism against em
 \label{fig:aqb}
 \end{figure}
 
-Of the 74 proposals that received at least one vote, the mean turnout was 25.1\% of the electorate (weighted by voting power) and the mean approval rate among voters was 96.7\%. Of the seven rejected proposals, five expired with zero turnout and two received minimal voting (one to three votes total) without clearing the AQB threshold; no proposal in the dataset has been actively voted down with nay votes exceeding the threshold. Examining the 32 approved swap option proposals more closely, we find that 25.4\% of aye voters had previously transacted with the beneficiary business (i.e., sent community currency to the beneficiary address before casting their vote), suggesting that the majority of approval votes are not driven by direct client relationships but rather by community solidarity or deference to proposal submitters.
+Of the 103 proposals that received at least one vote, the mean turnout was 25.1\% of the electorate (weighted by voting power) and the mean approval rate among voters was 97.6\%. Of the seven rejected proposals, five expired with zero turnout and two received minimal voting (one to three votes total) without clearing the AQB threshold; no proposal in the dataset has been actively voted down with nay votes exceeding the threshold. Examining the 60 swap option proposals that had reached the approval track (Approved or Confirming) by the cutoff more closely, we find that 28.7\% of aye voters had previously transacted with the beneficiary business (i.e., sent community currency to the beneficiary address before casting their vote), suggesting that the majority of approval votes are not driven by direct client relationships but rather by community solidarity or deference to proposal submitters.
 
 These outcomes are best read as evidence from a low-conflict, early-stage governance environment rather than as validation of the mechanism under stress. The combination of near-unanimous approval, expiry-only rejections, and small homogeneous electorates is consistent with cooperative coordination among engaged peers; it does not, however, demonstrate that AQB performs well when proposals are genuinely contested. We consider the absence of contested votes a limitation, not a result: the mechanism has not been tested against active opposition, strategic abstention, or adversarial agenda-setting, and our deployments are unlikely to generate such conditions at current scale and stakes.
 
@@ -300,14 +300,14 @@ These outcomes are best read as evidence from a low-conflict, early-stage govern
 \label{sec:knowhow}
 
 \paragraph{Submission concentration and informal influence.}
-Of 79 proposals, only 25 distinct accounts submitted any proposal at all, and the top two submitters together account for 42\% of submissions; by contrast, 127 unique accounts have cast votes, a substantially broader base but still under a third of active ceremony participants. Proposal submission is therefore concentrated in a small subset of community leaders who also act as governance educators. This asymmetry of know-how creates an informal influence channel the protocol does not model: members with less technical understanding tend to follow the opinion of those who explain the system. In some cases, participants hand over their phones so that a single person can submit votes on their behalf. Although this does not violate one-person-one-vote at the protocol level (each participant remains custodian of their wallet), it erodes voter \emph{agency} and structurally resembles the puppeteering dynamic Ohlhaver et al.~\cite{ohlhaver2024proof} identified as the central failure mode of Idena's governance. We observed the same pattern in pilot Leu Z\"urich in Switzerland: even when devices were not handed over, votes tracked the argumentation of the presumably \emph{knowledgeable} community leadership.
+Of 108 proposals, only 35 distinct accounts submitted any proposal at all, and the top two submitters together account for 34\% of submissions; by contrast, 129 unique accounts have cast votes, a broader base but still under a third of active ceremony participants. Proposal submission is therefore concentrated in a small subset of community leaders who also act as governance educators. This asymmetry of know-how creates an informal influence channel the protocol does not model: members with less technical understanding tend to follow the opinion of those who explain the system. In some cases, participants hand over their phones so that a single person can submit votes on their behalf. Although this does not violate one-person-one-vote at the protocol level (each participant remains custodian of their wallet), it erodes voter \emph{agency} and structurally resembles the puppeteering dynamic Ohlhaver et al.~\cite{ohlhaver2024proof} identified as the central failure mode of Idena's governance. We observed the same pattern in pilot Leu Z\"urich in Switzerland: even when devices were not handed over, votes tracked the argumentation of the presumably \emph{knowledgeable} community leadership.
 
 The gap between the protocol's democratic ideals and the social reality of facilitated participation is a limitation that cannot be resolved through mechanism design alone; it requires investment in governance literacy and accessible deliberation tools, neither of which is in scope for the chain layer. As community currencies grow in economic relevance, the cost of uninformed voting rises, which may drive greater engagement but also heighten capture risk through the same channel.
 
 \subsection{Treasury Governance Outcomes}
 \label{sec:swap-results}
 
-The treasury governance mechanism has been most actively used in Nyota, where 28 of the 32 enacted swap options were granted. Figure~\ref{fig:treasury} shows the cumulative timeline of all treasury governance proposals.
+The treasury governance mechanism has been most actively used in Nyota, where 38 of the 49 enacted swap options were granted. Figure~\ref{fig:treasury} shows the cumulative timeline of all treasury governance proposals.
 
 \begin{figure}[t]
 \centering
@@ -316,9 +316,9 @@ The treasury governance mechanism has been most actively used in Nyota, where 28
 \label{fig:treasury}
 \end{figure}
 
-The 32 granted swap options were issued to 21 unique beneficiaries. Of these, 19 (90\%) have exercised their options at least partially across 28 successful exercise transactions. Including SpendNative proposals (24 enacted), treasury management constitutes 77\% of all governance proposals (61 of 79), making it the dominant governance activity. This aligns with Ruddick's observation~\cite{ruddick2022grassroots} that managing the accumulation problem is a central concern in community currency sustainability.
+The 49 granted swap options were issued to 29 unique beneficiaries. Of these, 27 (93\%) have exercised their options at least partially across 45 successful exercise transactions. Including SpendNative proposals (25 enacted), treasury management constitutes 83\% of all governance proposals (90 of 108), making it the dominant governance activity. This aligns with Ruddick's observation~\cite{ruddick2022grassroots} that managing the accumulation problem is a central concern in community currency sustainability.
 
-Table~\ref{tab:value} shows the real USD value distributed through treasury governance. KSM amounts are valued at the daily exchange rate on the enactment date. The total of approximately \$10,560 distributed over 16 months is equivalent to 5,280 ceremony rewards (\$2 each). SpendNative proposals account for 93\% of the value, reflecting their role in compensating community leadership. In context, median daily earnings for informal sector workers are approximately \$2--3 in \locationC~\cite{nbs_tanzania_ilfs2014} and \locationD~\cite{nbs_nigeria_nlss2019}, placing the cumulative treasury outflow in a range meaningful for local economic activity.
+Table~\ref{tab:value} shows the real USD value distributed through treasury governance. KSM amounts are valued at the daily exchange rate on the enactment date. The total of approximately \$11,450 distributed over 17 months is equivalent to 5,725 ceremony rewards (\$2 each). SpendNative proposals account for 89\% of the value, reflecting their role in compensating community leadership. In context, median daily earnings for informal sector workers are approximately \$2--3 in \locationC~\cite{nbs_tanzania_ilfs2014} and \locationD~\cite{nbs_nigeria_nlss2019}, placing the cumulative treasury outflow in a range meaningful for local economic activity.
 
 \begin{table}[t]
 \centering
@@ -328,13 +328,13 @@ Table~\ref{tab:value} shows the real USD value distributed through treasury gove
 \toprule
 Type & Community & USD & \% \\
 \midrule
-SpendNative & Nyota & 6{,}556 & 62.1 \\
-SpendNative & PayNuq & 3{,}278 & 31.0 \\
-SwapAsset exercised & Nyota & 663 & 6.3 \\
-SwapAsset exercised & PayNuq & 63 & 0.6 \\
+SpendNative & Nyota & 6{,}556 & 57.3 \\
+SpendNative & PayNuq & 3{,}684 & 32.2 \\
+SwapAsset exercised & Nyota & 1{,}046 & 9.1 \\
+SwapAsset exercised & PayNuq & 163 & 1.4 \\
 SwapAsset exercised & Leu Z\"urich & 1 & 0.0 \\
 \midrule
-\textbf{Total} & & \textbf{10{,}561} & \textbf{100} \\
+\textbf{Total} & & \textbf{11{,}450} & \textbf{100} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -352,10 +352,10 @@ Interviews with Nyota leadership reveal that the introduction of swap options ha
 Our architecture shows that DAOs can govern shared treasury resources without token-weighted plutocracy when a reliable PoP layer is available. The ceremony-based PoP approach sidesteps the privacy and centralisation concerns of biometric systems while providing Sybil resistance that, per Hoffmann's analysis~\cite{hoffmann2021security}, is robust below the 50\% adversarial threshold, a condition easily maintained in small-to-medium communities with low ceremony rewards. The participation-weighted voting mechanism further strengthens governance integrity by rewarding sustained engagement over one-time participation.
 
 \paragraph{Participation and Legitimacy.}
-Adaptive quorum biasing provides a principled mechanism for navigating the tension between governance agility and democratic legitimacy under variable turnout. Our empirical findings show that proposals consistently achieve high approval rates among those who vote, while the AQB threshold ensures that low-turnout decisions require near-unanimity. We are careful, however, not to read this as validation of democratic robustness. In fact, our observations do not yet exercise AQB's discriminating power: every proposal that cleared the 5\% MinTurnout floor was approved by a near-unanimous margin, and the seven rejections either expired with zero votes (five cases) or had voting power below the MinTurnout floor (two cases). A simple majority rule paired with the same MinTurnout floor would have produced the same enactment/rejection outcomes across all 79 proposals. AQB's value lies in what it would prevent under conditions our deployments have not produced (close-to-majority opposition at moderate turnout), not in what it has decided so far.
+Adaptive quorum biasing provides a principled mechanism for navigating the tension between governance agility and democratic legitimacy under variable turnout. Our empirical findings show that proposals consistently achieve high approval rates among those who vote, while the AQB threshold ensures that low-turnout decisions require near-unanimity. We are careful, however, not to read this as validation of democratic robustness. In fact, our observations do not yet exercise AQB's discriminating power: every proposal that cleared the 5\% MinTurnout floor was approved by a near-unanimous margin, and the seven rejections either expired with zero votes (five cases) or had voting power below the MinTurnout floor (two cases). A simple majority rule paired with the same MinTurnout floor would have produced the same enactment/rejection outcomes across all 108 proposals. AQB's value lies in what it would prevent under conditions our deployments have not produced (close-to-majority opposition at moderate turnout), not in what it has decided so far.
 
 \paragraph{Limitations.}
-The dataset is still small (79 proposals across two active communities over $\approx$16 months, with 74 receiving any votes) and no proposal has been actively contested with significant nay votes, so AQB has not been tested under controversial conditions and our setting is unlikely to produce them at current scale. The ceremony mechanism imposes a substantial participation burden and the matters voted on are technically complex, producing an informal power dynamic the on-chain model does not capture. Stakes are also small (rewards $\approx$\$2), which provides natural Sybil resistance through high effective friction but limits the stakes of any single decision; whether the architecture's properties hold as economic value grows is open. Sybil-resistance claims rest on Hoffmann~\cite{hoffmann2021security}; we have not conducted adversarial evaluation in our deployments.
+The dataset is still small (108 proposals across two active communities over $\approx$17 months, with 103 receiving any votes) and no proposal has been actively contested with significant nay votes, so AQB has not been tested under controversial conditions and our setting is unlikely to produce them at current scale. The ceremony mechanism imposes a substantial participation burden and the matters voted on are technically complex, producing an informal power dynamic the on-chain model does not capture. Stakes are also small (rewards $\approx$\$2), which provides natural Sybil resistance through high effective friction but limits the stakes of any single decision; whether the architecture's properties hold as economic value grows is open. Sybil-resistance claims rest on Hoffmann~\cite{hoffmann2021security}; we have not conducted adversarial evaluation in our deployments.
 
 \paragraph{Generalizability.}
 The governance protocol is not specific to community currencies. Any DAO with a PoP identity layer could adopt the adaptive quorum biasing, participation-weighted voting, and parallel proposal mechanisms described here. The treasury swap governance application is domain-specific, but the underlying pattern (democratic oversight of resource allocation with per-beneficiary caps) applies broadly to grant programs, public goods funding, and other collective resource management scenarios.

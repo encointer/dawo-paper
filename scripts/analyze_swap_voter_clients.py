@@ -10,8 +10,8 @@ from common import *
 from collections import defaultdict
 from datetime import datetime, timezone
 
-CUTOFF_DATE = '2026-04-14'
-CUTOFF_TS_MS = int(datetime(2026, 4, 14, 23, 59, 59,
+CUTOFF_DATE = '2026-05-19'
+CUTOFF_TS_MS = int(datetime(2026, 5, 19, 6, 0, 0,
                             tzinfo=timezone.utc).timestamp() * 1000)
 
 GEOHASH_CID = {

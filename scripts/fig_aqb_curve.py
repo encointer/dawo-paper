@@ -6,8 +6,12 @@ rather than recomputing them, ensuring consistency with the chain.
 """
 from common import *
 from collections import defaultdict
+from datetime import datetime, timezone
 import numpy as np
 
+# Paper data freeze date. Matches generate_stats.py.
+CUTOFF_TS_MS = int(datetime(2026, 5, 19, 6, 0, 0,
+                            tzinfo=timezone.utc).timestamp() * 1000)
 
 MIN_TURNOUT_PERMILLE = 50  # 5% = 50 per mille
 
@@ -29,10 +33,16 @@ def main():
 
     # 2. For proposals not in cache (still Ongoing), get from vote events
     submitted = list(pindex.events.find({
-        'section': 'encointerDemocracy', 'method': 'ProposalSubmitted'
+        'section': 'encointerDemocracy', 'method': 'ProposalSubmitted',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }))
+    submitted_pids = {s['data']['proposalId'] for s in submitted}
+    # Restrict cached proposals to those submitted by the cutoff.
+    proposals_cached = {pid: d for pid, d in proposals_cached.items()
+                        if pid in submitted_pids}
     vote_events = list(pindex.events.find({
-        'section': 'encointerDemocracy', 'method': 'VotePlaced'
+        'section': 'encointerDemocracy', 'method': 'VotePlaced',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }))
 
     # Aggregate votes for non-cached proposals

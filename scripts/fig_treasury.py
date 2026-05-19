@@ -4,6 +4,10 @@ from common import *
 from datetime import datetime, timezone
 from collections import defaultdict
 
+# Paper data freeze date. Matches generate_stats.py.
+CUTOFF_TS_MS = int(datetime(2026, 5, 19, 6, 0, 0,
+                            tzinfo=timezone.utc).timestamp() * 1000)
+
 
 def main():
     setup_style()
@@ -12,19 +16,22 @@ def main():
 
     # 1. SpendNative enacted (direct KSM payouts)
     spend_native = list(pindex.events.find({
-        'section': 'encointerTreasuries', 'method': 'SpentNative'
+        'section': 'encointerTreasuries', 'method': 'SpentNative',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }).sort('timestamp', 1))
 
     # 2. SwapAsset granted (swap option enacted on-chain)
     granted_swap = list(pindex.events.find({
-        'section': 'encointerTreasuries', 'method': 'GrantedSwapAssetOption'
+        'section': 'encointerTreasuries', 'method': 'GrantedSwapAssetOption',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }).sort('timestamp', 1))
 
     # 3. SwapAsset exercised (beneficiary exercises swap option)
     exercised = list(pindex.extrinsics.find({
         'section': 'encointerTreasuries',
         'method': {'$in': ['swapAsset', 'swapNative']},
-        'success': True
+        'success': True,
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }).sort('timestamp', 1))
 
     print(f"SpendNative enacted: {len(spend_native)}")
