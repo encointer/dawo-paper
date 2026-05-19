@@ -11,7 +11,7 @@ ANCHOR_DATE = datetime(2024, 12, 2, tzinfo=timezone.utc)
 CYCLE_DAYS = 10
 
 # Paper data freeze date (inclusive). Matches generate_stats.py.
-CUTOFF_CINDEX = 148
+CUTOFF_CINDEX = 151
 
 def cindex_to_date(cindex):
     return ANCHOR_DATE + timedelta(days=(cindex - ANCHOR_CINDEX) * CYCLE_DAYS)
