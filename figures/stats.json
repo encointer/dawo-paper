@@ -1,4 +1,6 @@
 {
+  "cutoff_date": "2026-04-14",
+  "cutoff_cindex": 148,
   "total_proposals": 79,
   "proposals_by_type": {
     "IssueSwapAssetOption": 36,
@@ -21,43 +23,75 @@
     {
       "name": "Leu Z\u00fcrich",
       "cid": "u0qj944rhWE",
-      "ceremonies": 115,
+      "paper_label": "Community A",
+      "ceremonies": 118,
       "latest_participants": 3,
-      "peak_participants": 65
+      "peak_participants": 65,
+      "peak_reputables": 155,
+      "latest_reputables": 6
     },
     {
       "name": "Green Bay Dollar",
       "cid": "dpcmj33LUs9",
+      "paper_label": "Community B",
       "ceremonies": 38,
       "latest_participants": 4,
-      "peak_participants": 6
+      "peak_participants": 6,
+      "peak_reputables": 6,
+      "latest_reputables": 4
     },
     {
       "name": "Nyota",
       "cid": "kygch5kVGq7",
-      "ceremonies": 89,
-      "latest_participants": 40,
-      "peak_participants": 72
+      "paper_label": "Community C",
+      "ceremonies": 92,
+      "latest_participants": 43,
+      "peak_participants": 72,
+      "peak_reputables": 129,
+      "latest_reputables": 65
     },
     {
       "name": "Paynuq",
       "cid": "s1vrqQL2SD",
-      "ceremonies": 36,
-      "latest_participants": 28,
-      "peak_participants": 47
+      "paper_label": "Community D",
+      "ceremonies": 39,
+      "latest_participants": 13,
+      "peak_participants": 47,
+      "peak_reputables": 65,
+      "latest_reputables": 42
     }
   ],
   "ceremony_Community B_total_ceremonies": 38,
   "ceremony_Community B_mean_participants": 3.5,
-  "ceremony_Community D_total_ceremonies": 36,
-  "ceremony_Community D_mean_participants": 21.3,
-  "ceremony_Community C_total_ceremonies": 89,
-  "ceremony_Community C_mean_participants": 32.8,
-  "ceremony_Community A_total_ceremonies": 115,
-  "ceremony_Community A_mean_participants": 18.2,
+  "ceremony_Community D_total_ceremonies": 39,
+  "ceremony_Community D_mean_participants": 20.8,
+  "ceremony_Community C_total_ceremonies": 92,
+  "ceremony_Community C_mean_participants": 33.0,
+  "ceremony_Community A_total_ceremonies": 118,
+  "ceremony_Community A_mean_participants": 17.8,
   "governance_start": "2024-12-02",
   "governance_end": "2026-04-06",
   "swap_options_granted": 32,
   "swap_options_exercised": 28,
-  "treasury_native_spends": 24
+  "treasury_native_spends": 24,
+  "ceremony_attendees_ever": 804,
+  "ceremony_attendees_since_gov_start": 394,
+  "distinct_voters": 127,
+  "voter_share_of_active_pct": 32.2,
+  "distinct_submitters": 25,
+  "top_2_submitter_share_pct": 41.8,
+  "n_proposals_with_electorate": 79,
+  "n_proposals_with_votes": 74,
+  "mean_approval_rate_among_voters_pct": 96.7,
+  "mean_turnout_pct": 25.1,
+  "voting_power_mean_among_voters": 1.77,
+  "voting_power_std_among_voters": 0.62,
+  "participation_rate_by_power_pct": {
+    "1": 14.0,
+    "2": 29.3,
+    "3": 25.5
+  },
+  "unique_swap_beneficiaries": 21,
+  "beneficiaries_with_exercise": 19,
+  "beneficiary_exercise_share_pct": 90.5
 }

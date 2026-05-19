@@ -1,76 +1,116 @@
 #!/usr/bin/env python3
 """Analyze whether swap option Aye voters are clients of the beneficiary.
 
-For each enacted swap option proposal, categorize Aye voters into those who
-previously sent CC to the beneficiary address and those who have not.
+For each swap option proposal that reached Approved or Confirming state by
+the paper data cutoff, categorise Aye voters into those who previously sent
+community currency to the beneficiary address (clients) and those who did
+not. Cutoff matches generate_stats.py.
 """
 from common import *
 from collections import defaultdict
+from datetime import datetime, timezone
+
+CUTOFF_DATE = '2026-04-14'
+CUTOFF_TS_MS = int(datetime(2026, 4, 14, 23, 59, 59,
+                            tzinfo=timezone.utc).timestamp() * 1000)
+
+GEOHASH_CID = {
+    'u0qj9': 'u0qj944rhWE', 's1vrq': 's1vrqQL2SD',
+    'kygch': 'kygch5kVGq7', 'dpcmj': 'dpcmj33LUs9',
+}
+CID_NAME = {v: k for k, v in COMMUNITIES.items()} if False else COMMUNITIES
 
 
 def main():
     client = get_client()
     pindex = client['encointer-kusama-pindex']
-    cache_db = client['encointer-kusama-accounting-backend-cache']
 
-    # 1. Get enacted swap option proposals from governance cache
-    cached_proposals = list(cache_db['general_cache'].find({
-        'cacheIdentifier': 'governance-proposal'
+    # 1. Identify swap proposals that reached approved/confirming by cutoff.
+    submitted = list(pindex.events.find({
+        'section': 'encointerDemocracy', 'method': 'ProposalSubmitted',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
+    }))
+    state_updates = list(pindex.events.find({
+        'section': 'encointerDemocracy', 'method': 'ProposalStateUpdated',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }))
 
-    swap_proposals = []
-    for doc in cached_proposals:
-        p = doc.get('data', doc)
-        atype = p.get('actionType', '')
-        state = p.get('state', '')
-        if state != 'Enacted':
-            continue
-        if atype not in ('issueSwapAssetOption', 'issueSwapNativeOption'):
-            continue
-        swap_proposals.append(p)
+    proposals = {}
+    for s in submitted:
+        pid = s['data']['proposalId']
+        action = s['data'].get('proposalAction', {})
+        atype = list(action.keys())[0] if isinstance(action, dict) else str(action)
+        aval = list(action.values())[0] if isinstance(action, dict) else None
+        cid = None
+        if isinstance(aval, list) and aval and isinstance(aval[0], dict):
+            gh = aval[0].get('geohash', '')
+            cid = GEOHASH_CID.get(gh)
+        proposals[pid] = {'action_type': atype, 'state': 'Ongoing', 'cid': cid}
 
-    swap_proposals.sort(key=lambda p: p['id'])
-    proposal_ids = {p['id'] for p in swap_proposals}
+    transitions_by_pid = defaultdict(list)
+    for su in state_updates:
+        pid = su['data']['proposalId']
+        state = su['data']['proposalState']
+        stname = state if isinstance(state, str) else list(state.keys())[0]
+        transitions_by_pid[pid].append((su.get('timestamp', 0), stname))
+    for pid, ts_list in transitions_by_pid.items():
+        if pid in proposals:
+            ts_list.sort()
+            proposals[pid]['state'] = ts_list[-1][1]
 
-    # 2. Get beneficiary addresses from GrantedSwapAssetOption events.
-    #    Each grant is immediately followed by its ProposalEnacted event in the
-    #    same block, so we pair them by reading events in _id order per block.
+    swap_pids = {
+        pid for pid, p in proposals.items()
+        if p['action_type'] == 'IssueSwapAssetOption'
+        and p['state'] in ('Approved', 'Confirming')
+    }
+
+    # 2. Resolve beneficiary per proposal: GrantedSwapAssetOption events for
+    #    Approved proposals; ProposalAction.swapAssetOption[1] for the rest.
+    proposal_beneficiary = {}
+
     grant_block_nums = list(set(
-        e['blockNumber'] for e in pindex['events'].find(
-            {'section': 'encointerTreasuries', 'method': 'GrantedSwapAssetOption'},
+        e['blockNumber'] for e in pindex.events.find(
+            {'section': 'encointerTreasuries',
+             'method': 'GrantedSwapAssetOption',
+             'timestamp': {'$lte': CUTOFF_TS_MS}},
             {'blockNumber': 1}
         )
     ))
-
-    block_events = list(pindex['events'].find({
+    block_events = list(pindex.events.find({
         'blockNumber': {'$in': grant_block_nums},
         'method': {'$in': ['GrantedSwapAssetOption', 'ProposalEnacted']}
     }).sort('_id', 1))
-
-    proposal_beneficiary = {}
-    pending_beneficiary = None
+    pending = None
     for ev in block_events:
         if ev['method'] == 'GrantedSwapAssetOption':
-            pending_beneficiary = ev['data'].get('who')
-        elif ev['method'] == 'ProposalEnacted' and pending_beneficiary:
+            pending = ev['data'].get('who')
+        elif ev['method'] == 'ProposalEnacted' and pending is not None:
             pid = ev['data'].get('proposalId')
             if pid is not None:
-                proposal_beneficiary[pid] = pending_beneficiary
-            pending_beneficiary = None
+                proposal_beneficiary[pid] = pending
+            pending = None
 
-    # 3. Get all VotePlaced events and resolve voter addresses
-    vote_placed = list(pindex['events'].find({
-        'section': 'encointerDemocracy',
-        'method': 'VotePlaced'
+    # For Confirming proposals not yet enacted, read beneficiary from the
+    # ProposalSubmitted payload directly.
+    for s in submitted:
+        pid = s['data']['proposalId']
+        if pid not in swap_pids or pid in proposal_beneficiary:
+            continue
+        action = s['data'].get('proposalAction', {})
+        aval = list(action.values())[0] if isinstance(action, dict) else None
+        if isinstance(aval, list) and len(aval) >= 2:
+            proposal_beneficiary[pid] = aval[1]
+
+    # 3. Aye voters per swap proposal (votes <= cutoff).
+    vote_events = list(pindex.events.find({
+        'section': 'encointerDemocracy', 'method': 'VotePlaced',
+        'timestamp': {'$lte': CUTOFF_TS_MS}
     }))
+    ext_ids = [v.get('extrinsicId') for v in vote_events if v.get('extrinsicId')]
+    ext_map = {e['_id']: e for e in pindex.extrinsics.find({'_id': {'$in': ext_ids}})}
 
-    ext_ids = [v.get('extrinsicId') for v in vote_placed if v.get('extrinsicId')]
-    extrinsics = list(pindex['extrinsics'].find({'_id': {'$in': ext_ids}}))
-    ext_map = {e['_id']: e for e in extrinsics}
-
-    # Build per-proposal Aye voters with timestamps
     aye_voters_by_proposal = defaultdict(list)
-    for v in vote_placed:
+    for v in vote_events:
         ext = ext_map.get(v.get('extrinsicId'))
         if not ext:
             continue
@@ -80,87 +120,73 @@ def main():
             vote_dir = data.get('vote', '')
         elif isinstance(data, list):
             pid = data[0] if data else None
-            raw_vote = data[1] if len(data) > 1 else None
-            vote_dir = 'Aye' if raw_vote == 'Aye' or (isinstance(raw_vote, dict) and 'aye' in raw_vote) else 'Nay'
+            raw = data[1] if len(data) > 1 else None
+            vote_dir = 'Aye' if raw == 'Aye' or (
+                isinstance(raw, dict) and 'aye' in raw) else 'Nay'
         else:
             continue
-
         voter = (ext.get('signer', {}) or {}).get('Id')
         if not pid or not voter or vote_dir != 'Aye':
             continue
-        if pid not in proposal_ids:
+        if pid not in swap_pids:
             continue
         aye_voters_by_proposal[pid].append({
-            'voter': voter,
-            'timestamp': v.get('timestamp', 0)
+            'voter': voter, 'timestamp': v.get('timestamp', 0)
         })
 
-    # 4. For each swap proposal, check which Aye voters are clients
-    print(f"{'ID':>4}  {'Community':<16} {'Aye Voters':>10} "
-          f"{'Clients':>8} {'Non-Clients':>11} {'Client %':>9}")
-    print("-" * 65)
+    # 4. Client classification per proposal.
+    community_stats = defaultdict(
+        lambda: {'aye': 0, 'clients': 0, 'non': 0, 'proposals': 0})
 
-    community_stats = defaultdict(lambda: {'aye': 0, 'clients': 0, 'non': 0, 'proposals': 0})
-
-    for p in swap_proposals:
-        pid = p['id']
+    print(f"Cutoff: {CUTOFF_DATE}  swap proposals (approved+confirming): "
+          f"{len(swap_pids)}")
+    print(f"{'ID':>4}  {'Community':<16} {'Aye':>5} {'Cli':>5} "
+          f"{'Non':>5} {'Cli %':>7}")
+    print("-" * 56)
+    for pid in sorted(swap_pids):
+        cid = proposals[pid].get('cid')
+        community = COMMUNITIES.get(cid, cid or '?')
         beneficiary = proposal_beneficiary.get(pid)
         aye_voters = aye_voters_by_proposal.get(pid, [])
-        community = p.get('communityName', p.get('communityId', '?'))
-
         if not beneficiary or not aye_voters:
             n, c, nc = len(aye_voters), 0, len(aye_voters)
         else:
-            # Query all CC transfers TO beneficiary
-            transfers = list(pindex['events'].find({
-                'section': 'encointerBalances',
-                'method': 'Transferred',
-                'data.2': beneficiary
+            transfers = list(pindex.events.find({
+                'section': 'encointerBalances', 'method': 'Transferred',
+                'data.2': beneficiary,
+                'timestamp': {'$lte': CUTOFF_TS_MS}
             }))
-
-            # Build sender -> list of timestamps
-            sender_timestamps = defaultdict(list)
+            sender_ts = defaultdict(list)
             for t in transfers:
-                sender = t['data'][1]
-                sender_timestamps[sender].append(t.get('timestamp', 0))
-
-            c = 0
-            nc = 0
+                sender_ts[t['data'][1]].append(t.get('timestamp', 0))
+            c = nc = 0
             for av in aye_voters:
-                prior = any(ts < av['timestamp'] for ts in sender_timestamps.get(av['voter'], []))
+                prior = any(ts < av['timestamp']
+                            for ts in sender_ts.get(av['voter'], []))
                 if prior:
                     c += 1
                 else:
                     nc += 1
             n = len(aye_voters)
-
-        pct = f"{c / n * 100:.1f}%" if n > 0 else "-"
-        print(f"{pid:>4}  {community:<16} {n:>10} {c:>8} {nc:>11} {pct:>9}")
+        pct = f"{c/n*100:.1f}%" if n else "-"
+        print(f"{pid:>4}  {community:<16} {n:>5} {c:>5} {nc:>5} {pct:>7}")
         community_stats[community]['aye'] += n
         community_stats[community]['clients'] += c
         community_stats[community]['non'] += nc
         community_stats[community]['proposals'] += 1
 
-    # Per-community summary
-    print("-" * 65)
-    total_aye = 0
-    total_clients = 0
-    total_non = 0
+    print("-" * 56)
+    tot_a = tot_c = tot_nc = 0
     for comm in sorted(community_stats):
         s = community_stats[comm]
-        pct = f"{s['clients'] / s['aye'] * 100:.1f}%" if s['aye'] > 0 else "-"
-        print(f"{'':>4}  {comm:<16} {s['aye']:>10} {s['clients']:>8} "
-              f"{s['non']:>11} {pct:>9}  ({s['proposals']} proposals)")
-        total_aye += s['aye']
-        total_clients += s['clients']
-        total_non += s['non']
-
-    print("-" * 65)
-    total_pct = f"{total_clients / total_aye * 100:.1f}%" if total_aye > 0 else "-"
-    print(f"{'':>4}  {'TOTAL':<16} {total_aye:>10} "
-          f"{total_clients:>8} {total_non:>11} {total_pct:>9}  "
+        pct = f"{s['clients']/s['aye']*100:.1f}%" if s['aye'] else "-"
+        print(f"      {comm:<16} {s['aye']:>5} {s['clients']:>5} "
+              f"{s['non']:>5} {pct:>7}  ({s['proposals']} proposals)")
+        tot_a += s['aye']; tot_c += s['clients']; tot_nc += s['non']
+    tot_pct = f"{tot_c/tot_a*100:.1f}%" if tot_a else "-"
+    print("-" * 56)
+    print(f"      {'TOTAL':<16} {tot_a:>5} {tot_c:>5} {tot_nc:>5} {tot_pct:>7}  "
           f"({sum(s['proposals'] for s in community_stats.values())} proposals)")
-
     client.close()
 
 
