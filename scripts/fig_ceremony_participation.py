@@ -10,6 +10,9 @@ ANCHOR_CINDEX = 98
 ANCHOR_DATE = datetime(2024, 12, 2, tzinfo=timezone.utc)
 CYCLE_DAYS = 10
 
+# Paper data freeze date (inclusive). Matches generate_stats.py.
+CUTOFF_CINDEX = 148
+
 def cindex_to_date(cindex):
     return ANCHOR_DATE + timedelta(days=(cindex - ANCHOR_CINDEX) * CYCLE_DAYS)
 
@@ -23,12 +26,12 @@ def main():
     fig, ax1 = plt.subplots(figsize=(FIG_WIDTH_DOUBLE, 2.8))
 
     markers = {
-        'Community A': 'o', 'Community C': 's',
-        'Community B': '^', 'Community D': 'D'
+        'Leu Zürich': 'o', 'Nyota': 's',
+        'Green Bay Dollar': '^', 'PayNuq': 'D'
     }
     colors = {
-        'Community A': '#1f77b4', 'Community C': '#ff7f0e',
-        'Community B': '#2ca02c', 'Community D': '#d62728'
+        'Leu Zürich': '#1f77b4', 'Nyota': '#ff7f0e',
+        'Green Bay Dollar': '#2ca02c', 'PayNuq': '#d62728'
     }
 
     all_cindexes = []
@@ -36,7 +39,7 @@ def main():
         cid = doc['cid']
         name = COMMUNITIES.get(cid, cid)
         data = doc['data']
-        cindexes = sorted(int(k) for k in data.keys())
+        cindexes = sorted(int(k) for k in data.keys() if int(k) <= CUTOFF_CINDEX)
         participants = [data[str(c)]['numParticipants'] for c in cindexes]
 
         if max(participants) < 3:
