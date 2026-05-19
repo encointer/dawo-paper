@@ -62,9 +62,6 @@ In this paper, we present a field-deployed governance architecture that combines
 \item An application to treasury governance for community currencies, enabling communities to democratically allocate funds for leadership compensation and stablecoin-backed swap options (Section~\ref{sec:treasury}).
 \item Empirical observations from two small African communities, covering participation, voting-power distribution, AQB dynamics, and the role of knowhow asymmetry as a de facto constraint on equal influence (Section~\ref{sec:results}).
 \end{enumerate}
-We position our empirics as evidence from a low-conflict, early-stage governance environment, not as validation of democratic robustness under contestation; this distinction motivates much of the discussion in Section~\ref{sec:discussion}.
-
-We begin with related work (Section~\ref{sec:related}), then describe the PoP mechanism (Section~\ref{sec:pop}), the governance protocol (Section~\ref{sec:governance}), and treasury governance (Section~\ref{sec:treasury}). Section~\ref{sec:results} presents field results, followed by discussion (Section~\ref{sec:discussion}) and conclusion (Section~\ref{sec:conclusion}).
 
 %=====================================================================
 \section{Related Work}
@@ -99,12 +96,6 @@ The simultaneity constraint is critical: all ceremonies worldwide occur at the s
 \paragraph{Sybil Resistance.}
 Hoffmann~\cite{hoffmann2021security} shows that creating a Sybil identity requires controlling a majority of the attendees assigned to a single meetup. However, maintaining Sybil identities across ceremonies requires the adversary to control over 50\% of the entire network's reputable population, and the analysis identifies a \emph{friction threshold} of approximately 4.5\%: if minion recruitment costs exceed this fraction of the ceremony reward, no Sybil strategy is profitable within two years. Moreover, Sybil attacks are observable by honest participants in affected meetups, and sustained attacks erode community trust in the currency, destroying the value of any rewards gained. The puppeteering risks documented by Ohlhaver et al.~\cite{ohlhaver2024proof} for Idena are further mitigated by the physical co-presence requirement, which raises coordination costs and social detection risk.
 
-\paragraph{Reputation Model.}
-Successful ceremony attendance earns a \emph{reputation} valid for a rolling window of $R = 5$ ceremonies. Participants hold one of three statuses: \emph{Bootstrapper} (predefined founders of the community), \emph{Reputable} (at least one successful ceremony within the reputation window), or \emph{Newbie} (no recent reputation). Bootstrappers constitute the trusted setup for each community and do not change after the first ceremony. They hold no privileges beyond guaranteed assignment to every ceremony they register for.
-
-% unnecessary for context
-% To promote an honest majority at each gathering, the protocol requires that at least 2/3 of participants hold reputable or bootstrapper status. Newbies are assigned only to remaining seats under this constraint. To accelerate growth, each reputable can endorse up to two newbies per cycle, guaranteeing them assignment to the next ceremony. Reputation is non-transferable and decays automatically: a participant who stops attending loses all reputation within $R$ cycles. This creates a \emph{liveness} requirement that continuously validates personhood, unlike one-time identity verification schemes.
-
 %=====================================================================
 \section{Democratic Governance Protocol}
 \label{sec:governance}
@@ -117,12 +108,7 @@ Any participant with reputable status can submit a governance proposal on-chain 
 
 Each proposal specifies a \emph{ProposalAction} drawn from a fixed set of governance operations: modifying community parameters (nominal income, demurrage rate, ceremony locations), spending treasury funds, issuing swap options, or submitting non-binding petitions. Proposals are either community-scoped (only members of that community vote) or global (all communities vote). The electorate is computed at submission time and remains fixed throughout the proposal's lifetime, ensuring a stable approval threshold.
 
-\subsection{Parallel Competing Proposals}
-\label{sec:parallel}
-
-Multiple proposals of the same type can coexist simultaneously. For parameter-setting actions (e.g., two competing proposals to set different demurrage rates), the first proposal to reach confirmed approval supersedes all older competing proposals, which transition to a \emph{SupersededBy} state. This first-to-pass mechanism prevents deadlocks where conflicting proposals block each other indefinitely.
-
-Non-parameter actions (treasury spends, swap option grants, and petitions) do not supersede each other, allowing multiple independent spending proposals to proceed in parallel. This distinction reflects the difference between mutually exclusive parameter choices and additive resource allocations.
+Multiple proposals of the same type can coexist simultaneously. For parameter-setting actions (e.g., two competing proposals to set different demurrage rates), the first proposal to reach confirmed approval supersedes all older competing proposals, which transition to a \emph{SupersededBy} state. This first-to-pass mechanism prevents deadlocks where conflicting proposals block each other indefinitely. Non-parameter actions (treasury spends, swap option grants, and petitions) do not supersede each other, allowing multiple independent spending proposals to proceed in parallel.
 
 \subsection{Participation-Weighted Voting Power}
 \label{sec:voting-power}
@@ -153,38 +139,9 @@ Ohlhaver et al.~\cite{ohlhaver2024proof} found that Idena's analogous mechanism 
 
 A fixed majority threshold (e.g., 50\%) creates a legitimacy problem under variable turnout: a proposal passing with 51\% of a 5\% turnout represents support from only 2.5\% of the electorate. Conversely, requiring high absolute turnout causes governance paralysis when participation fluctuates.
 
-We adopt \emph{adaptive quorum biasing} (AQB), first introduced in the Polkadot governance design~\cite{burdges2020overview}, with a positive turnout bias. Let $E$ denote the electorate size, $T$ the total voting power of all voters (turnout), and $A$ the voting power of aye voters. The proposal passes if:
-\begin{equation}
-\label{eq:aqb}
-\frac{T - A}{\sqrt{T}} < \frac{A}{\sqrt{E}}
-\end{equation}
-which yields an approval threshold as a fraction of turnout:
-\begin{equation}
-\label{eq:threshold}
-\theta(T, E) = \frac{\sqrt{E}}{\sqrt{E} + \sqrt{T}}
-\end{equation}
+We adopt \emph{adaptive quorum biasing} (AQB), first introduced in the Polkadot governance design~\cite{burdges2020overview}, with a positive turnout bias and a \emph{MinTurnout} floor of 5\% of the electorate. At full turnout a simple majority suffices; as turnout decreases, the required approval threshold rises toward near-unanimity. The formal threshold derivation and an illustration of the mechanism are given in Appendix~\ref{app:aqb}.
 
-At full turnout ($T = E$), the threshold is exactly $50\%$; a simple majority suffices. As turnout decreases, $\theta$ increases toward $100\%$, requiring near-unanimity among the few who vote. This encodes a reasonable democratic principle: decisions affecting the entire community should require broad consensus when most members are absent, but a simple majority suffices when everyone participates.
-
-Additionally, a \emph{MinTurnout} floor of 5\% of the electorate prevents proposals from passing when turnout is negligibly small, regardless of unanimity among voters.
-
-%Figure~\ref{fig:aqb-design} illustrates the AQB threshold curve with a minimum turnout of 5\%. The shaded region above the curve represents passing conditions.
-%
-%\begin{figure}[t]
-%\centering
-%\includegraphics[width=0.7\textwidth]{figures/democracy-aqb.pdf}
-%\caption{Adaptive quorum biasing: approval threshold as a function of turnout. The blue trace shows a possible trajectory where a proposal fluctuates between passing and failing before eventual confirmation (blue dot). A 5\% minimum turnout floor is applied.}
-%\label{fig:aqb-design}
-%\end{figure}
-
-A proposal that meets the AQB threshold enters a \emph{Confirming} state. It must remain continuously passing for a confirmation period before transitioning to \emph{Approved} and entering the enactment queue. If the threshold is no longer met (i.e., due to new nay votes), the proposal returns to \emph{Ongoing}. If a proposal is not approved within its lifetime, it is \emph{Rejected}. Figure~\ref{fig:state-machine} shows the complete proposal state machine.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/democracy-proposal-state-machine.pdf}
-\caption{Proposal state machine. Proposals transition between Ongoing and Confirming based on whether the AQB threshold is met. Approval requires passing continuously for the confirmation period. Proposals are cancelled if they expire or are superseded.}
-\label{fig:state-machine}
-\end{figure}
+Proposals move between \emph{Ongoing}, \emph{Confirming}, \emph{Approved}, \emph{Rejected}, and \emph{SupersededBy}; the full state machine is described in Appendix~\ref{app:state-machine}.
 
 %=====================================================================
 \section{Treasury Governance for Community Currencies}
@@ -196,17 +153,7 @@ Each community maintains a treasury funded by external subsidies and transaction
 Beyond direct spending, the treasury governance addresses a recurring sustainability challenge specific to community currencies: popular businesses that attract many customers accumulate tokens faster than they can spend them within the local network. Ruddick~\cite{ruddick2022grassroots} documents this ``accumulation problem'' across over 100 community currency deployments in Kenya, where businesses with excess tokens lose motivation to continue accepting the currency, threatening network viability.
 
 \paragraph{Swap Options as Democratic Policy.}
-Our architecture addresses this through \emph{treasury swap options}: a community can democratically vote to grant a specific business the right to exchange accumulated community currency tokens for stablecoins (e.g., USDC) held in the community treasury. Each swap option is defined by:
-\begin{itemize}
-\item A beneficiary address (the business receiving swap rights)
-\item An allowance (maximum stablecoin amount available for swap)
-\item An exchange rate (community currency units per stablecoin unit)
-% these are not actively used:
-%\item A burn flag (whether swapped community currency is burned or returned to treasury)
-%\item Optional validity window (start and end dates)
-\end{itemize}
-
-To exercise a swap option, the beneficiary sends community currency tokens to the treasury and receives stablecoins up to their remaining allowance. Each exercise reduces the allowance, preventing unlimited extraction. The swapped community currency is permanently destroyed, reducing circulating supply.
+Our architecture addresses this through \emph{treasury swap options}: a community can democratically vote to grant a specific business (the \emph{beneficiary}) the right to exchange community currency tokens for stablecoins (e.g., USDC) held in the community treasury, up to a stablecoin allowance and at a specified exchange rate. To exercise the option, the beneficiary sends community currency to the treasury and receives stablecoins; each exercise reduces the remaining allowance and burns the swapped community currency, reducing circulating supply.
 
 \paragraph{Safeguards Against Treasury Depletion.}
 Two community-level conventions protect treasuries from excessive extraction. First, a \emph{per-beneficiary limit} caps each swap option at 10\% of the unallocated treasury balance, ensuring no single business can drain a disproportionate share. Second, a 2\% \emph{exercise fee} is deducted from each swap, creating a cost of extraction that discourages speculative or unnecessary swaps. The choice of parameters has been negotiated with our communities and is subject to change.
@@ -384,7 +331,44 @@ We thank the community leaders of Nyota (\locationC) and PayNuq (\locationD) for
 
 Portions of this manuscript were drafted with the assistance of large language models, in accordance with the DAWO26 AI usage policy and Springer Declarations for Use of AI. The authors take full responsibility for the content.
 
+\clearpage
 \bibliographystyle{splncs03}
 \bibliography{references}
+
+\clearpage
+\appendix
+\section{Adaptive Quorum Biasing}
+\label{app:aqb}
+
+Let $E$ denote the electorate size, $T$ the total voting power of all voters (turnout), and $A$ the voting power of aye voters. The proposal passes if:
+\begin{equation}
+\label{eq:aqb}
+\frac{T - A}{\sqrt{T}} < \frac{A}{\sqrt{E}}
+\end{equation}
+which yields an approval threshold as a fraction of turnout:
+\begin{equation}
+\label{eq:threshold}
+\theta(T, E) = \frac{\sqrt{E}}{\sqrt{E} + \sqrt{T}}
+\end{equation}
+At full turnout ($T = E$), the threshold is exactly $50\%$; a simple majority suffices. As turnout decreases, $\theta$ increases toward $100\%$, requiring near-unanimity among the few who vote. This encodes a democratic principle: decisions affecting the entire community should require broad consensus when most members are absent, but a simple majority suffices when everyone participates. The 5\% MinTurnout floor additionally prevents proposals from passing when turnout is negligibly small, regardless of unanimity among voters.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/democracy-aqb.pdf}
+\caption{AQB approval threshold $\theta(T, E)$ as a function of turnout. The shaded region above the curve represents passing conditions. The blue trace shows a possible trajectory where a proposal fluctuates between passing and failing before eventual confirmation (blue dot); the 5\% MinTurnout floor is applied as a hard cut.}
+\label{fig:aqb-design}
+\end{figure}
+
+\section{Proposal State Machine}
+\label{app:state-machine}
+
+A proposal that meets the AQB threshold enters a \emph{Confirming} state. It must remain continuously passing for a confirmation period before transitioning to \emph{Approved} and entering the enactment queue. If the threshold is no longer met (e.g., due to new nay votes), the proposal returns to \emph{Ongoing}. If a proposal is not approved within its lifetime, it is \emph{Rejected}. Figure~\ref{fig:state-machine} shows the complete proposal state machine.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/democracy-proposal-state-machine.pdf}
+\caption{Proposal state machine. Proposals transition between Ongoing and Confirming based on whether the AQB threshold is met. Approval requires passing continuously for the confirmation period. Proposals are cancelled if they expire or are superseded.}
+\label{fig:state-machine}
+\end{figure}
 
 \end{document}
