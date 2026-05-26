@@ -44,7 +44,7 @@ Dezentrum, Zurich, Switzerland \\
 \begin{abstract}
 Decentralized Autonomous Organizations (DAOs) typically govern treasury resources through token-weighted voting, producing plutocratic outcomes in which influence scales with capital. We present a field-deployed governance architecture that combines decentralized proof-of-personhood (PoP) with on-chain governance to bound influence inequality in treasury allocation, approximating one-person-one-vote. Personhood is established through simultaneous physical key-signing ceremonies. On this foundation we implement a protocol with open proposal submission, parallel competing proposals, participation-weighted voting (capped at three), and adaptive quorum biasing. We apply this infrastructure to community-currency treasuries, enabling communities to allocate native tokens for leader compensation and manage stablecoin-backed swap options for local businesses. The architecture is operational in two small, locally cohesive African communities. We treat our empirics as observations from a low-conflict, early-stage governance environment rather than a stress test of democratic robustness: turnout is moderate, approval near-unanimous, and proposal submission concentrated in a few community leaders, surfacing knowhow asymmetry as a first-order constraint on de facto equal influence.
 %
-\keywords{DAO governance, proof-of-personhood, one-person-one-vote, democratic treasury management, community currencies}
+\keywords{DAO governance, proof-of-personhood, one-person-one-vote, treasury governance, community currencies}
 \end{abstract}
 
 %=====================================================================
@@ -54,9 +54,9 @@ Decentralized Autonomous Organizations (DAOs) typically govern treasury resource
 
 Decentralized Autonomous Organizations (DAOs) manage billions of dollars in collective treasury assets, yet their governance mechanisms almost universally default to token-weighted voting: one token, one vote. This design produces plutocratic outcomes in which financial capital determines political power~\cite{schneider2024governable}. Empirical analysis of major DAOs confirms extreme concentration: Fritsch et al.~\cite{fritsch2024analyzing} find Gini coefficients of voting power exceeding 0.98 in Compound and Uniswap governance, with fewer than 10 delegates controlling a majority of decisions. Large token holders dominate proposal outcomes, while smaller participants (often the most active community members) are systematically marginalized. Schneider identifies this as a structural consequence of the ``personhood problem'': without a reliable way to verify that each participant is a unique human, pseudonymous blockchain systems cannot implement democratic alternatives.
 
-Proof-of-personhood (PoP) protocols offer a path beyond this impasse. By establishing that each participant in a governance process is a distinct human being, PoP enables governance mechanisms that decouple political influence from financial stake. Several PoP approaches have been proposed: biometric verification (e.g., iris scanning~\cite{worldcoin2023}), social graph analysis~\cite{brightid2020}, concurrent reverse-Turing tests~\cite{idena2019}, and physical ceremonies~\cite{brenzikofer2019encointer}\cite{ford2020identity}. Boog~\cite{boog2025} provides a systematic classification. Each approach involves distinct tradeoffs in privacy, accessibility, and decentralization~\cite{buterin2023biometric}.
+Proof-of-personhood (PoP) protocols offer a path beyond this impasse. By establishing that each participant in a governance process is a distinct human being, PoP enables governance mechanisms that decouple political influence from financial stake. Several PoP approaches have been proposed: biometric verification (e.g., iris scanning~\cite{worldcoin2023}), social graph analysis~\cite{brightid2020}, concurrent reverse-Turing tests~\cite{idena2019}, and physical ceremonies~\cite{brenzikofer2019encointer,ford2020identity}. Boog~\cite{boog2025} provides a systematic classification. Each approach involves distinct tradeoffs in privacy, accessibility, and decentralisation~\cite{buterin2023biometric}.
 
-Our chosen PoP mechanism~\cite{brenzikofer2019encointer} is based on physical ceremonies and measures confidence by bounded participation-based weighting and is, therefore, not perfectly egalitarian. However, established democracies routinely deviate from strict one-person-one-vote in bounded ways: federal upper chambers (the Swiss \emph{St"anderat}, the US Senate) assign equal seats per sub-jurisdiction regardless of population, electoral colleges and malapportioned districts shift effective vote weight by geography, and long-resident non-citizens are typically excluded from the franchise~\cite{samuels2001value}; we view our cap-of-three participation weighting as a comparable, bounded deviation that is orders of magnitude smaller than the inequalities token-weighted governance produces.
+Our chosen PoP mechanism~\cite{brenzikofer2019encointer} is based on physical ceremonies and measures confidence by bounded participation-based weighting and is, therefore, not perfectly egalitarian. However, established democracies routinely deviate from strict one-person-one-vote in bounded ways: federal upper chambers (the Swiss \emph{St\"anderat}, the US Senate) assign equal seats per sub-jurisdiction regardless of population, electoral colleges and malapportioned districts shift effective vote weight by geography, and long-resident non-citizens are typically excluded from the franchise~\cite{samuels2001value}; we view our cap-of-three participation weighting as a comparable, bounded deviation that is orders of magnitude smaller than the inequalities token-weighted governance produces.
 
 In this paper, we present a field-deployed governance architecture that combines ceremony-based PoP with on-chain democratic governance for treasury resource allocation. Our contributions are:
 \begin{enumerate}
@@ -88,10 +88,10 @@ Schneider~\cite{schneider2024governable} proposes ``modular politics'': composab
 \label{sec:pop}
 %=====================================================================
 
-The uniqueness foundation of our governance architecture is a decentralized proof-of-personhood (PoP) protocol based on physical key-signing ceremonies~\cite{brenzikofer2019encointer}. Unlike biometric approaches that require specialized hardware~\cite{worldcoin2023} and raise privacy and centralization concerns~\cite{buterin2023biometric}, or government-issued identity documents that exclude undocumented populations~\cite{ford2020identity}, this ceremony-based approach establishes personhood through simultaneous physical co-presence.
+The uniqueness foundation of our governance architecture is a decentralized proof-of-personhood (PoP) protocol based on physical key-signing ceremonies~\cite{brenzikofer2019encointer}. Unlike biometric approaches that require specialized hardware~\cite{worldcoin2023} and raise privacy and centralisation concerns~\cite{buterin2023biometric}, or government-issued identity documents that exclude undocumented populations~\cite{ford2020identity}, this ceremony-based approach establishes personhood through simultaneous physical co-presence.
 
 \paragraph{Ceremony Mechanism.}
-Participation is unpermissioned: any person can register for a ceremony without approval from existing members or any central authority. Registrants are assigned to recurring ceremonies held at fixed intervals (currently every 10 days). At the designated time, they are randomly assigned to meetup locations where groups of 3--15 participants gather simultaneously. During the meetup, each participant performs pairwise cryptographic attestations with all other attendees, creating a mutual proof of physical co-presence. The assignment algorithm minimizes repeat encounters across ceremonies and limits newcomers to at most one quarter of each group, preventing rapid infiltration. Because community membership and, consequently, voting rights follow automatically from ceremony attendance, the entire governance electorate is self-selected rather than curated.
+Participation is unpermissioned: any person can register for a ceremony without approval from existing members or any central authority. Ceremonies recur at fixed intervals (currently every 10 days). At the designated time, registrants are randomly assigned to meetup locations where groups of 3--15 participants gather simultaneously. During the meetup, each participant performs pairwise cryptographic attestations with all other attendees, creating a mutual proof of physical co-presence. The assignment algorithm minimizes repeat encounters across ceremonies and limits newcomers to at most one quarter of each group, preventing rapid infiltration. Because community membership and, consequently, voting rights follow automatically from ceremony attendance, the entire governance electorate is self-selected rather than curated.
 
 The simultaneity constraint is critical: all ceremonies worldwide occur at the same moment (local solar noon), making it physically impossible for a single person to attend multiple meetups (we exclude polar regions and the international date line). This provides Sybil resistance without requiring biometric data or centralized identity verification. We call an account \emph{reputable} if it has at least one rewarded ceremony attendance within the most recent $R = 5$ cycles; reputation is non-transferable and decays automatically when a participant stops attending.
 
@@ -110,7 +110,7 @@ Any participant with reputable status can submit a governance proposal on-chain 
 
 Each proposal specifies a \emph{ProposalAction} drawn from a fixed set of governance operations: modifying community parameters (nominal income, demurrage rate, ceremony locations), spending treasury funds, issuing swap options, or submitting non-binding petitions. Proposals are either community-scoped (only members of that community vote) or global (all communities vote). The electorate is computed at submission time and remains fixed throughout the proposal's lifetime, ensuring a stable approval threshold.
 
-Multiple proposals of the same type can coexist simultaneously. For parameter-setting actions (e.g., two competing proposals to set different demurrage rates), the first proposal to reach confirmed approval supersedes all older competing proposals, which transition to a \emph{SupersededBy} state. This first-to-pass mechanism prevents deadlocks where conflicting proposals block each other indefinitely. Non-parameter actions (treasury spends, swap option grants, and petitions) do not supersede each other, allowing multiple independent spending proposals to proceed in parallel.
+Multiple proposals of the same type can coexist. When competing proposals target the same parameter (e.g., demurrage rate), the first to reach confirmed approval supersedes all older competitors, which transition to a \emph{SupersededBy} state. This prevents deadlocks where conflicting proposals block each other indefinitely. Non-parameter actions (treasury spends, swap option grants, petitions) do not supersede each other, allowing multiple independent spending proposals to proceed in parallel.
 
 Proposals move between \emph{Ongoing}, \emph{Confirming}, \emph{Approved}, \emph{Rejected}, and \emph{SupersededBy}; the full state machine is described in Appendix~\ref{app:state-machine}.
 
@@ -182,7 +182,7 @@ To complement on-chain analysis we conducted semi-structured interviews with the
 \subsection{Deployment Context}
 \label{sec:deployments}
 
-The governance architecture has been operational since December 2024 across all communities. The swap option feature has been added in January 2026. Table~\ref{tab:communities} summarizes the deployment context.
+The governance architecture has been operational since December 2024 across all communities. The swap option feature was added in January 2026. Table~\ref{tab:communities} summarizes the deployment context.
 
 \begin{table}[t]
 \centering
@@ -194,21 +194,20 @@ The governance architecture has been operational since December 2024 across all 
 Community & Ceremonies & Reputables & Reputables & Submitted \\
 \midrule
 Leu Z\"urich (Switzerland) & 119 & 155 & 6 & 6 \\
-Nyota (Tanzania) & 93 & 129 & 61 & 73 \\
-PayNuq (Nigeria) & 40 & 65 & 34 & 29 \\
+Nyota (Tanzania) & 94 & 129 & 61 & 73 \\
+PayNuq (Nigeria) & 41 & 65 & 34 & 29 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Leu Z\"urich in Switzerland served as the earliest testbed, reaching 155 reputables at its peak, but has since declined to single-digit participation. The primary deployment is Nyota in \locationC, where approximately 60 entrepreneurs (tailors, food vendors, and cosmetics sellers) participate in regular ceremonies and accept the local community currency for their goods and services. Nyota peaked at 129 reputables and currently maintains 61. PayNuq in \locationD has grown rapidly since its launch, reaching 65 reputables at peak and currently maintaining 34.
 
-Over the observation period (December 2024 to May 2026), the governance system processed 108 proposals: 64 swap option grants, 26 native treasury spends, 12 petitions, 3 updates to the ceremony reward (``nominal income''), 2 adjustments to the token decay rate (``demurrage'')~\cite{brenzikofer2019encointer}, and 1 location addition. By the cutoff, 91 had been approved and enacted, 8 had passed the AQB threshold and were in the confirmation period (i.e., on track to enact), 7 had been rejected, and 2 had been superseded by competing proposals.
+Over the observation period (December 2024 to May 2026), the governance system processed 108 proposals: 64 swap option grants, 26 native treasury spends, 12 petitions, 3 updates to the ceremony reward (``nominal income''), 2 adjustments to the token decay rate (``demurrage'')~\cite{brenzikofer2019encointer}, and 1 location addition. By the cutoff, 91 had been approved and enacted, 8 had passed the AQB threshold and were in the confirmation period, 7 had been rejected, and 2 had been superseded by competing proposals.
 
 \subsection{Participation Patterns}
 \label{sec:participation}
 
-
-Figure~\ref{fig:ceremony} shows ceremony participation over time for each community. Nyota demonstrates sustained participation with an average of 33.0 participants per ceremony across 93 cycles. PayNuq shows rapid growth since launch, averaging 20.7 participants across 40 ceremonies. These figures describe a small, locally cohesive participant base rather than a population large enough to test mechanism behaviour under contestation.
+Figure~\ref{fig:ceremony} shows ceremony participation over time for each community. Nyota demonstrates sustained participation with an average of 33.0 participants per ceremony across 94 cycles. PayNuq shows rapid growth since launch, averaging 20.6 participants across 41 ceremonies. These figures describe a small, locally cohesive participant base rather than a population large enough to test mechanism behaviour under contestation.
 
 \begin{figure}[t]
 \centering
@@ -218,13 +217,13 @@ Figure~\ref{fig:ceremony} shows ceremony participation over time for each commun
 \end{figure}
 
 \paragraph{Voting Power Distribution.}
-Figure~\ref{fig:voting-power} analyzes voting power distributions, computed per-proposal against each proposal's specific electorate and averaged across all 108 proposals. Voting power ranges from 1 to 3, with a mean of 1.78 and standard deviation of 0.61 among voters. Participation rates by power rise with engagement: 14\% at power~1, 30\% at power~2, and 29\% at power~3, indicating that sustained ceremony attendance correlates with (though does not strictly determine) deeper engagement in governance. The moderate power differentiation (hard cap of 3, empirical standard deviation of 0.61) describes the \emph{designed} bound on inequality among voters; it contrasts sharply with the orders-of-magnitude inequality typical of token-weighted governance.
+Figure~\ref{fig:voting-power} analyzes voting power distributions, computed per-proposal against each proposal's specific electorate and averaged across the 103 proposals that received at least one vote. Voting power ranges from 1 to 3, with a mean of 1.78 and standard deviation of 0.61 among voters. Participation rates by power rise with engagement: 14\% at power~1, 30\% at power~2, and 29\% at power~3, indicating that sustained ceremony attendance correlates with (though does not strictly determine) deeper engagement in governance. The moderate power differentiation (hard cap of 3, empirical standard deviation of 0.61) describes the \emph{designed} bound on inequality among voters; it contrasts sharply with the orders-of-magnitude inequality typical of token-weighted governance.
 
 Of the 808 unique accounts that have ever participated in ceremonies across all communities, 398 were active since the deployment of governance tools in December 2024. Of these, 129 (32.4\%) have cast at least one governance vote. While this is substantially higher than typical DAO participation rates, it still means that roughly two thirds of active ceremony participants have not engaged in governance.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig-voting-power.pdf}
-\caption{Left: mean number of unique voters per proposal at each voting power level with Gaussian fit. Right: participation rate (fraction of eligible accounts that voted) by voting power. Both averaged across all 108 proposals with computable electorate.}
+\caption{Left: mean number of unique voters per proposal at each voting power level with Gaussian fit. Right: participation rate (fraction of eligible accounts that voted) by voting power. Both averaged across the 103 proposals that received at least one vote.}
 \label{fig:voting-power}
 \end{figure}
 
@@ -246,8 +245,6 @@ The combination of near-unanimous approval, expiry-only rejections, and small ho
 
 \subsection{Knowhow Asymmetry and Agenda-Setting}
 \label{sec:knowhow}
-
-% \paragraph{Submission concentration and informal influence.}
 Of 108 proposals, only 35 distinct accounts submitted any proposal at all, and the top two submitters together account for 34\% of submissions; by contrast, 129 unique accounts have cast votes, a broader base but still under a third of active ceremony participants. Proposal submission is therefore concentrated in a small subset of community leaders who also act as governance educators. This asymmetry of know-how creates an informal influence channel the protocol does not model: members with less technical understanding tend to follow the opinion of those who explain the system. In some cases, participants hand over their phones so that a single person can submit votes on their behalf. Although this does not violate one-person-one-vote at the protocol level (each participant remains custodian of their wallet), it erodes voter \emph{agency} and structurally resembles the puppeteering dynamic Ohlhaver et al.~\cite{ohlhaver2024proof} identified as the central failure mode of Idena's governance. We observed the same pattern in pilot Leu Z\"urich in Switzerland: even when devices were not handed over, votes tracked the argumentation of the presumably \emph{knowledgeable} community leadership.
 
 The gap between the protocol's democratic ideals and the social reality of facilitated participation is a limitation that cannot be resolved through mechanism design alone; it requires investment in governance literacy and accessible deliberation tools, neither of which is in scope for the chain layer. As community currencies grow in economic relevance, the cost of uninformed voting rises, which may drive greater engagement but also heighten capture risk through the same channel.
@@ -289,7 +286,7 @@ SwapAsset exercised & Leu Z\"urich & 1 & 0.0 \\
 
 The per-beneficiary limit of 10\% of treasury balance and the 2\% exercise fee have not yet been tested over a longer term. Current utilization levels suggest the mechanism is functioning as intended, providing democratic oversight of treasury outflows while enabling businesses to convert excess community currency to stablecoins.
 
-Interviews with Nyota leadership reveal that the introduction of swap options has materially changed the perception of the community currency. Previously, participants spent tokens carelessly (e.g., sending 15 Nyota when 10 were owed); now that tokens can be converted to stablecoins, they are treated as a store of value. Emergent financial behavior has appeared: one member loaned 30 Nyota and agreed on repayment of 35, implying an informal interest rate. As the community leader summarized: ``Sometimes people don't have cash but they have Nyota!'' However, the offramp from stablecoins to local cash remains a significant obstacle, particularly for participants without bank accounts or credit cards. In PayNuq, business owners report waiting over a month for pending conversions through an agent, and the friction of converting stablecoins to mobile money limits the practical reach of the swap mechanism.
+Interviews with Nyota leadership reveal that the introduction of swap options has materially changed the perception of the community currency. Previously, participants spent tokens carelessly (e.g., sending 15 Nyota when 10 were owed); now that tokens can be converted to stablecoins, they are treated as a store of value. Emergent financial behaviour has appeared: one member loaned 30 Nyota and agreed on repayment of 35, implying an informal interest rate. As the community leader summarized: ``Sometimes people don't have cash but they have Nyota!'' However, the offramp from stablecoins to local cash remains a significant obstacle, particularly for participants without bank accounts or credit cards. In PayNuq, business owners report waiting over a month for pending conversions through an agent, and the friction of converting stablecoins to mobile money limits the practical reach of the swap mechanism.
 
 %=====================================================================
 \section{Discussion}
