@@ -113,7 +113,7 @@ def main():
     colors_list = []
     color_map = {
         'Leu Zürich': '#1f77b4', 'Nyota': '#ff7f0e',
-        'PayNuq': '#d62728', 'Green Bay Dollar': '#2ca02c'
+        'PayNuq': '#d62728'
     }
 
     for comm in ['Nyota', 'PayNuq', 'Leu Zürich']:
