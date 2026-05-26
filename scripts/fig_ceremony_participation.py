@@ -26,13 +26,12 @@ def main():
     fig, ax1 = plt.subplots(figsize=(FIG_WIDTH_DOUBLE, 2.8))
 
     markers = {
-        'Leu Zürich': 'o', 'Nyota': 's',
-        'Green Bay Dollar': '^', 'PayNuq': 'D'
+        'Leu Zürich': 'o', 'Nyota': 's', 'PayNuq': 'D'
     }
     colors = {
-        'Leu Zürich': '#1f77b4', 'Nyota': '#ff7f0e',
-        'Green Bay Dollar': '#2ca02c', 'PayNuq': '#d62728'
+        'Leu Zürich': '#1f77b4', 'Nyota': '#ff7f0e', 'PayNuq': '#d62728'
     }
+    SKIP = {'Green Bay Dollar'}
 
     all_cindexes = []
     for doc in docs:
@@ -42,7 +41,7 @@ def main():
         cindexes = sorted(int(k) for k in data.keys() if int(k) <= CUTOFF_CINDEX)
         participants = [data[str(c)]['numParticipants'] for c in cindexes]
 
-        if max(participants) < 3:
+        if max(participants) < 3 or name in SKIP:
             continue
 
         all_cindexes.extend(cindexes)
